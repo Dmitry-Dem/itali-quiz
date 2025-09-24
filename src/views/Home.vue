@@ -44,11 +44,11 @@
             <p class="action-description">Export or import your vocabulary data</p>
           </div>
           
-          <div class="action-card quiz-card">
-            <div class="action-icon">🎯</div>
-            <h3 class="action-title">Start Quiz</h3>
-            <p class="action-description">Test your knowledge (Coming Soon)</p>
-          </div>
+          <router-link to="/flashcards/all" class="action-card flashcard-card" :class="{ disabled: words.length === 0 }">
+            <div class="action-icon">�</div>
+            <h3 class="action-title">Study Flashcards</h3>
+            <p class="action-description">{{ words.length === 0 ? 'Add words to start studying' : 'Learn with interactive flashcards' }}</p>
+          </router-link>
         </div>
       </div>
 
@@ -385,6 +385,16 @@ nextTick(() => {
 .quiz-card {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+.flashcard-card {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.flashcard-card.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .recent-words {

@@ -3,6 +3,7 @@ import Home from '../views/Home.vue'
 import WordList from '../views/WordList.vue'
 import Groups from '../views/Groups.vue'
 import GroupWords from '../views/GroupWords.vue'
+import FlashCards from '../views/FlashCards.vue'
 
 const routes = [
   {
@@ -24,6 +25,11 @@ const routes = [
     path: '/words/:groupId',
     name: 'GroupWords',
     component: GroupWords
+  },
+  {
+    path: '/flashcards/:groupId',
+    name: 'FlashCards',
+    component: FlashCards
   },
   {
     path: '/:pathMatch(.*)*',

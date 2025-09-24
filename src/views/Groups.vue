@@ -2,10 +2,21 @@
   <div class="groups-container">
     <div class="header">
       <h2>Word Categories</h2>
-      <button @click="showAddGroupModal = true" class="btn btn-primary add-category-btn">
-        <span class="btn-icon">➕</span>
-        <span class="btn-text">Add New Category</span>
-      </button>
+      <div class="header-actions">
+        <button 
+          @click="goToFlashCards('all')" 
+          class="btn btn-flashcard-all"
+          :disabled="words.length === 0"
+          title="Study all words with flashcards"
+        >
+          <i class="icon">🃏</i>
+          Study All Words
+        </button>
+        <button @click="showAddGroupModal = true" class="btn btn-primary add-category-btn">
+          <span class="btn-icon">➕</span>
+          <span class="btn-text">Add New Category</span>
+        </button>
+      </div>
     </div>
 
     <div v-if="isLoading" class="loading">
@@ -40,6 +51,17 @@
           <div class="group-stats">
             <span class="word-count">{{ getGroupWordCount(group.id) }} words</span>
             <span class="created-date">Created {{ formatDate(group.createdAt) }}</span>
+          </div>
+          <div class="group-buttons">
+            <button 
+              @click.stop="goToFlashCards(group.id)" 
+              class="btn-flashcard"
+              :disabled="getGroupWordCount(group.id) === 0"
+              title="Study with flashcards"
+            >
+              <i class="icon">🃏</i>
+              Flashcards
+            </button>
           </div>
         </div>
       </div>
@@ -182,6 +204,10 @@ const goToGroupWords = (groupId: string) => {
   router.push(`/words/${groupId}`)
 }
 
+const goToFlashCards = (groupId: string) => {
+  router.push(`/flashcards/${groupId}`)
+}
+
 const editGroup = (group: WordGroup) => {
   editingGroup.value = group
   groupForm.value = {
@@ -264,6 +290,12 @@ const closeModal = () => {
   margin: 0;
   color: var(--text-primary);
   font-size: 2rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
 }
 
 .btn {
@@ -415,6 +447,59 @@ const closeModal = () => {
 .word-count {
   font-weight: 600;
   color: var(--primary-color);
+}
+
+.group-buttons {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-flashcard {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-flashcard:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
+}
+
+.btn-flashcard:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-flashcard-all {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-flashcard-all:hover:not(:disabled) {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-flashcard-all:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .empty-state {

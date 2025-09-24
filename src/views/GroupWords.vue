@@ -22,6 +22,15 @@
       </div>
       
       <div class="actions">
+        <button 
+          @click="goToFlashCards" 
+          class="btn btn-flashcard"
+          :disabled="filteredWords.length === 0"
+          title="Study with flashcards"
+        >
+          <span class="icon">🃏</span>
+          Flashcards
+        </button>
         <button @click="showAddWordModal = true" class="btn btn-primary">
           <span class="icon">➕</span>
           Add Word
@@ -255,10 +264,11 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAppStore, type Word } from '../composables/useAppStore'
 
 const route = useRoute()
+const router = useRouter()
 const { words, wordGroups, isLoading, loadData, addWord, updateWord, removeWord, updateWordGroup } = useAppStore()
 
 const groupId = computed(() => route.params.groupId as string)
@@ -310,6 +320,10 @@ watch(currentGroup, (newGroup) => {
 
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString()
+}
+
+const goToFlashCards = () => {
+  router.push(`/flashcards/${groupId.value}`)
 }
 
 const editWord = (word: Word) => {
@@ -506,6 +520,25 @@ const closeGroupModal = () => {
 
 .btn-secondary:hover {
   background: var(--bg-quaternary);
+}
+
+.btn-flashcard {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+}
+
+.btn-flashcard:hover:not(:disabled) {
+  background: linear-gradient(135deg, #e186f0 0%, #e34960 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(240, 147, 251, 0.4);
+}
+
+.btn-flashcard:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .loading {
