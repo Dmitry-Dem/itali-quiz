@@ -92,7 +92,6 @@
       </router-link>
     </div>
 
-    <!-- Session Complete Modal -->
     <div v-if="showCompleteModal" class="modal-overlay" @click="closeCompleteModal">
       <div class="modal" @click.stop>
         <div class="modal-header">
@@ -131,24 +130,22 @@ import { useAppStore } from '../composables/useAppStore'
 
 const route = useRoute()
 const router = useRouter()
-const { groups, words: allWords, updateWordStats } = useAppStore()
+const { wordGroups, words: allWords, updateWordStats } = useAppStore()
 
 const groupId = ref(route.params.groupId as string)
 const isAllWords = computed(() => groupId.value === 'all')
-const selectedGroup = computed(() => groups.value.find(g => g.id === groupId.value))
+const selectedGroup = computed(() => wordGroups.value.find((g: any) => g.id === groupId.value))
 
 const currentIndex = ref(0)
 const isFlipped = ref(false)
 const showCompleteModal = ref(false)
 
-// Touch/Mouse handling
 const isDragging = ref(false)
 const startX = ref(0)
 const currentX = ref(0)
 const swipeThreshold = 100
 const swipeDirection = ref<'left' | 'right' | null>(null)
 
-// Session stats
 const sessionStats = ref({
   total: 0,
   easy: 0,
@@ -192,7 +189,6 @@ const nextCard = () => {
     currentIndex.value++
     isFlipped.value = false
   } else {
-    // Session complete
     showCompleteModal.value = true
   }
 }
@@ -235,7 +231,6 @@ const handleSwipe = (direction: 'left' | 'right') => {
   }
 }
 
-// Touch events
 const handleTouchStart = (e: TouchEvent) => {
   isDragging.value = true
   startX.value = e.touches[0].clientX
@@ -261,7 +256,6 @@ const handleTouchEnd = () => {
   currentX.value = 0
 }
 
-// Mouse events (for desktop)
 const handleMouseDown = (e: MouseEvent) => {
   isDragging.value = true
   startX.value = e.clientX
@@ -301,7 +295,6 @@ const goBack = () => {
   router.back()
 }
 
-// Keyboard shortcuts
 const handleKeyDown = (e: KeyboardEvent) => {
   switch (e.code) {
     case 'Space':
