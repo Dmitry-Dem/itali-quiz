@@ -1,7 +1,6 @@
 <template>
   <div class="word-list-page">
     <div class="container">
-      <!-- Header Section -->
       <div class="page-header animate-slide-down">
         <div class="header-content">
           <h1 class="page-title">My Vocabulary</h1>
@@ -16,7 +15,6 @@
         </div>
       </div>
 
-      <!-- Search and Filter -->
       <div class="search-section animate-slide-up">
         <div class="search-container">
           <div class="search-input-wrapper">
@@ -38,7 +36,6 @@
         </div>
       </div>
 
-      <!-- Words List -->
       <div class="words-section animate-fade-in">
         <div v-if="filteredWords.length === 0 && searchQuery" class="no-results">
           <div class="no-results-icon">🔍</div>
@@ -124,7 +121,6 @@
       </div>
     </div>
 
-    <!-- Add Word Modal -->
     <div v-if="showAddModal" class="modal-overlay" @click="closeAddModal">
       <div class="modal-content" @click.stop>
         <div class="modal-header">
@@ -194,7 +190,6 @@
       </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
     <div v-if="showDeleteModal" class="modal-overlay" @click="showDeleteModal = false">
       <div class="modal-content delete-modal" @click.stop>
         <div class="modal-header">

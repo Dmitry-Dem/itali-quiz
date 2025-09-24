@@ -7,6 +7,12 @@
             <h2 class="text-xl font-bold">🇮🇹 Vocab</h2>
           </router-link>
           
+          <div class="nav-links">
+            <router-link to="/" class="nav-link">Home</router-link>
+            <router-link to="/groups" class="nav-link">Categories</router-link>
+            <router-link to="/words" class="nav-link">All Words</router-link>
+          </div>
+          
           <button @click="toggleTheme" class="btn btn-icon btn-secondary">
             <span v-if="theme === 'light'">🌙</span>
             <span v-else>☀️</span>
@@ -69,6 +75,31 @@ onMounted(() => {
   color: var(--text-primary);
 }
 
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+.nav-link.router-link-active {
+  color: var(--primary-color);
+  background: var(--primary-color)20;
+}
+
 .main-content {
   flex: 1;
   padding: 2rem 0;
@@ -79,6 +110,20 @@ onMounted(() => {
 @media (max-width: 768px) {
   .nav-header {
     padding: 0.75rem 0;
+  }
+  
+  .flex {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .nav-links {
+    gap: 1rem;
+  }
+  
+  .nav-link {
+    padding: 0.5rem;
+    font-size: 0.875rem;
   }
   
   .main-content {

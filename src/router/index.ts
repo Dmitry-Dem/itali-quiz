@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import WordList from '../views/WordList.vue'
+import Groups from '../views/Groups.vue'
+import GroupWords from '../views/GroupWords.vue'
 
 const routes = [
   {
@@ -12,6 +14,16 @@ const routes = [
     path: '/words',
     name: 'WordList',
     component: WordList
+  },
+  {
+    path: '/groups',
+    name: 'Groups',
+    component: Groups
+  },
+  {
+    path: '/words/:groupId',
+    name: 'GroupWords',
+    component: GroupWords
   },
   {
     path: '/:pathMatch(.*)*',

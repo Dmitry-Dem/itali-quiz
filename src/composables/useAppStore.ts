@@ -101,6 +101,46 @@ export const useAppStore = () => {
     return wordGroups.value
   }
 
+  const addWordGroup = async (groupData: { name: string; description?: string; icon: string; color: string }) => {
+    const newGroup: WordGroup = {
+      id: `group-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      name: groupData.name,
+      description: groupData.description,
+      icon: groupData.icon,
+      color: groupData.color,
+      createdAt: new Date().toISOString()
+    }
+
+    wordGroups.value.push(newGroup)
+    dataService.saveWordGroups(wordGroups.value)
+  }
+
+  const updateWordGroup = async (groupId: string, updates: Partial<Pick<WordGroup, 'name' | 'description' | 'icon' | 'color'>>) => {
+    const groupIndex = wordGroups.value.findIndex(group => group.id === groupId)
+    if (groupIndex !== -1) {
+      wordGroups.value[groupIndex] = { ...wordGroups.value[groupIndex], ...updates }
+      dataService.saveWordGroups(wordGroups.value)
+    }
+  }
+
+  const deleteWordGroup = async (groupId: string) => {
+    const defaultGroupId = 'default-group'
+    
+    // Move all words from this group to the default group
+    words.value.forEach(word => {
+      if (word.groupId === groupId) {
+        word.groupId = defaultGroupId
+      }
+    })
+    
+    // Remove the group
+    wordGroups.value = wordGroups.value.filter(group => group.id !== groupId)
+    
+    // Save both words and groups
+    dataService.saveWords(words.value)
+    dataService.saveWordGroups(wordGroups.value)
+  }
+
   const exportData = () => {
     const data = dataService.exportData()
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
@@ -149,6 +189,9 @@ export const useAppStore = () => {
     searchWords,
     getWordsByGroup,
     getWordGroups,
+    addWordGroup,
+    updateWordGroup,
+    deleteWordGroup,
     exportData,
     importData
   }
