@@ -235,18 +235,14 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
 import { useAppStore } from '../composables/useAppStore'
 
-// const router = useRouter() // removed unused
 const { words, wordGroups, addWord, exportData, importData } = useAppStore()
 
-// Modal states
 const showAddModal = ref(false)
 const showDataModal = ref(false)
 const showConfirmModal = ref(false)
 
-// Form data
 const newWord = ref({
   italian: '',
   english: '',
@@ -255,25 +251,21 @@ const newWord = ref({
   details: ''
 })
 
-// Confirmation modal
 const confirmModal = ref({
   title: '',
   message: '',
   action: null as (() => void) | null
 })
 
-// Refs
 const italianInput = ref<HTMLInputElement>()
 const fileInput = ref<HTMLInputElement>()
 
-// Computed
 const recentWords = computed(() => {
   return [...words.value]
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 6)
 })
 
-// Methods
 const getGroupWordCount = (groupId: string) => {
   return words.value.filter(word => word.groupId === groupId).length
 }
@@ -295,11 +287,12 @@ const closeDataModal = () => {
 
 const addNewWord = async () => {
   try {
+    const difficulty = newWord.value.difficulty as 'beginner' | 'intermediate' | 'advanced' | ''
     await addWord(
       newWord.value.italian.trim(),
       newWord.value.english.trim(),
       newWord.value.groupId,
-      newWord.value.difficulty || undefined,
+      difficulty || undefined,
       newWord.value.details.trim() || undefined
     )
     closeAddModal()

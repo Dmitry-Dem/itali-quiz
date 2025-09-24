@@ -247,10 +247,9 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useAppStore } from '../composables/useAppStore'
 
-// const route = useRoute() // removed unused
 const router = useRouter()
 const { wordGroups, words: allWords, updateWordStats } = useAppStore()
 
