@@ -3,14 +3,14 @@ import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig(({ command }) => ({
-  base: command === 'build' ? '/Itali-quiz/' : '/',
+  base: command === 'build' ? '/itali-quiz/' : '/',
   plugins: [
     vue(),
     VitePWA({
       manifest: {
         name: 'ItaliQuiz',
         short_name: 'ItaliQuiz',
-        start_url: '/Itali-quiz/',
+        start_url: '/itali-quiz/',
         display: 'standalone',
         background_color: '#ffffff',
         theme_color: '#42b883',
