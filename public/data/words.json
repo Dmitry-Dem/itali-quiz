@@ -1,0 +1,47 @@
+[
+  {
+    "id": "1",
+    "italian": "Ciao",
+    "english": "Hello",
+    "category": "greetings",
+    "difficulty": "beginner",
+    "createdAt": "2025-09-23T10:00:00.000Z",
+    "lastReviewed": null
+  },
+  {
+    "id": "2",
+    "italian": "Grazie",
+    "english": "Thank you",
+    "category": "courtesy",
+    "difficulty": "beginner",
+    "createdAt": "2025-09-23T10:05:00.000Z",
+    "lastReviewed": null
+  },
+  {
+    "id": "3",
+    "italian": "Arrivederci",
+    "english": "Goodbye",
+    "category": "greetings",
+    "difficulty": "beginner",
+    "createdAt": "2025-09-23T10:10:00.000Z",
+    "lastReviewed": null
+  },
+  {
+    "id": "4",
+    "italian": "Per favore",
+    "english": "Please",
+    "category": "courtesy",
+    "difficulty": "beginner",
+    "createdAt": "2025-09-23T10:15:00.000Z",
+    "lastReviewed": null
+  },
+  {
+    "id": "5",
+    "italian": "Scusi",
+    "english": "Excuse me",
+    "category": "courtesy",
+    "difficulty": "beginner",
+    "createdAt": "2025-09-23T10:20:00.000Z",
+    "lastReviewed": null
+  }
+]

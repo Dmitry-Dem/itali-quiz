@@ -1,0 +1,39 @@
+{
+  "name": "Italian Vocabulary App",
+  "short_name": "Italian Vocab",
+  "description": "Learn Italian vocabulary with this beautiful mobile app",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "32x32",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "lang": "en",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Add Word",
+      "short_name": "Add Word",
+      "description": "Quickly add a new Italian word",
+      "url": "/?action=add",
+      "icons": [{ "src": "/vite.svg", "sizes": "32x32" }]
+    },
+    {
+      "name": "View Words",
+      "short_name": "View Words",
+      "description": "Browse your vocabulary",
+      "url": "/words",
+      "icons": [{ "src": "/vite.svg", "sizes": "32x32" }]
+    }
+  ]
+}
