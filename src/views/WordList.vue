@@ -64,7 +64,7 @@
                 <div class="italian-text">{{ word.italian }}</div>
                 <div class="english-text">{{ word.english }}</div>
                 <div class="word-meta">
-                  <span class="category-badge">{{ word.category || 'general' }}</span>
+                  <span class="category-badge">{{ getGroupName(word.groupId) || 'general' }}</span>
                   <span class="difficulty-badge" :class="word.difficulty || 'beginner'">
                     {{ word.difficulty || 'beginner' }}
                   </span>
@@ -157,14 +157,14 @@
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">Category</label>
-              <select v-model="newWord.category" class="form-input">
-                <option value="general">General</option>
-                <option value="greetings">Greetings</option>
-                <option value="courtesy">Courtesy</option>
-                <option value="food">Food</option>
-                <option value="family">Family</option>
-                <option value="travel">Travel</option>
-                <option value="business">Business</option>
+              <select v-model="newWord.groupId" class="form-input">
+                <option 
+                  v-for="group in wordGroups" 
+                  :key="group.id" 
+                  :value="group.id"
+                >
+                  {{ group.icon }} {{ group.name }}
+                </option>
               </select>
             </div>
             
@@ -220,7 +220,7 @@
 import { ref, computed, nextTick } from 'vue'
 import { useAppStore, type Word } from '../composables/useAppStore'
 
-const { words, addWord, removeWord, updateWord, searchWords } = useAppStore()
+const { words, wordGroups, addWord, removeWord, updateWord, searchWords } = useAppStore()
 
 const searchQuery = ref('')
 
@@ -229,7 +229,7 @@ const addItalianInput = ref<HTMLInputElement>()
 const newWord = ref({
   italian: '',
   english: '',
-  category: 'general',
+  groupId: 'default-group',
   difficulty: 'beginner' as 'beginner' | 'intermediate' | 'advanced'
 })
 
@@ -238,7 +238,7 @@ const editItalianInput = ref<HTMLInputElement>()
 const editForm = ref({
   italian: '',
   english: '',
-  category: 'general',
+  groupId: 'default-group',
   difficulty: 'beginner' as 'beginner' | 'intermediate' | 'advanced'
 })
 
@@ -248,6 +248,11 @@ const wordToDelete = ref<Word | null>(null)
 const filteredWords = computed(() => {
   return searchWords(searchQuery.value)
 })
+
+const getGroupName = (groupId: string) => {
+  const group = wordGroups.value.find(g => g.id === groupId)
+  return group?.name || 'General'
+}
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
@@ -260,15 +265,15 @@ const formatDate = (dateString: string) => {
 
 const handleAddWord = () => {
   if (newWord.value.italian.trim() && newWord.value.english.trim()) {
-    addWord(newWord.value.italian, newWord.value.english, newWord.value.category, newWord.value.difficulty)
-    newWord.value = { italian: '', english: '', category: 'general', difficulty: 'beginner' }
+    addWord(newWord.value.italian, newWord.value.english, newWord.value.groupId, newWord.value.difficulty)
+    newWord.value = { italian: '', english: '', groupId: 'default-group', difficulty: 'beginner' }
     showAddModal.value = false
   }
 }
 
 const closeAddModal = () => {
   showAddModal.value = false
-  newWord.value = { italian: '', english: '', category: 'general', difficulty: 'beginner' }
+  newWord.value = { italian: '', english: '', groupId: 'default-group', difficulty: 'beginner' }
 }
 
 const startEdit = (word: Word) => {
@@ -276,7 +281,7 @@ const startEdit = (word: Word) => {
   editForm.value = {
     italian: word.italian,
     english: word.english,
-    category: word.category || 'general',
+    groupId: word.groupId || 'default-group',
     difficulty: word.difficulty || 'beginner'
   }
   
@@ -289,14 +294,14 @@ const startEdit = (word: Word) => {
 
 const cancelEdit = () => {
   editingId.value = null
-  editForm.value = { italian: '', english: '', category: 'general', difficulty: 'beginner' }
+  editForm.value = { italian: '', english: '', groupId: 'default-group', difficulty: 'beginner' }
 }
 
 const saveEdit = () => {
   if (editingId.value && editForm.value.italian.trim() && editForm.value.english.trim()) {
-    updateWord(editingId.value, editForm.value.italian, editForm.value.english, editForm.value.category, editForm.value.difficulty)
+    updateWord(editingId.value, editForm.value.italian, editForm.value.english, editForm.value.groupId, editForm.value.difficulty)
     editingId.value = null
-    editForm.value = { italian: '', english: '', category: 'general', difficulty: 'beginner' }
+    editForm.value = { italian: '', english: '', groupId: 'default-group', difficulty: 'beginner' }
   }
 }
 

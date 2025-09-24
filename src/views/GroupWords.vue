@@ -220,11 +220,10 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useAppStore, type Word, type WordGroup } from '../composables/useAppStore'
+import { useRoute } from 'vue-router'
+import { useAppStore, type Word } from '../composables/useAppStore'
 
 const route = useRoute()
-const router = useRouter()
 const { words, wordGroups, isLoading, loadData, addWord, updateWord, removeWord, updateWordGroup } = useAppStore()
 
 const groupId = computed(() => route.params.groupId as string)
