@@ -166,15 +166,12 @@
       </div>
     </div>
 
-    <!-- PWA Install Prompt -->
-    <PWAInstall />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue'
 import { useAppStore } from '../composables/useAppStore'
-import PWAInstall from '../components/PWAInstall.vue'
 
 const { words, addWord, exportData, importData } = useAppStore()
 

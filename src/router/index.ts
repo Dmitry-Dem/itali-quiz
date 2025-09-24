@@ -12,6 +12,10 @@ const routes = [
     path: '/words',
     name: 'WordList',
     component: WordList
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/'
   }
 ]
 
