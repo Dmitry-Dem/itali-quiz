@@ -46,13 +46,17 @@ export const useAppStore = () => {
     dataService.saveSettings(settings.value)
   }
   
-  const addWord = (italian: string, english: string, groupId?: string, difficulty?: 'beginner' | 'intermediate' | 'advanced') => {
+  const addWord = (italian: string, english: string, groupId?: string, difficulty?: 'beginner' | 'intermediate' | 'advanced', details?: string, example?: string) => {
     const newWord: Word = {
       id: Date.now().toString(),
       italian: italian.trim(),
       english: english.trim(),
       groupId: groupId || 'default-group',
       difficulty: difficulty || 'beginner',
+      details: details?.trim() || undefined,
+      example: example?.trim() || undefined,
+      wrongAttempts: 0,
+      correctAttempts: 0,
       createdAt: new Date().toISOString(),
       lastReviewed: null
     }
@@ -68,13 +72,31 @@ export const useAppStore = () => {
     }
   }
   
-  const updateWord = (id: string, italian: string, english: string, groupId?: string, difficulty?: 'beginner' | 'intermediate' | 'advanced') => {
+  const updateWord = (id: string, italian: string, english: string, groupId?: string, difficulty?: 'beginner' | 'intermediate' | 'advanced', details?: string, example?: string) => {
     const word = words.value.find(w => w.id === id)
     if (word) {
       word.italian = italian.trim()
       word.english = english.trim()
       if (groupId) word.groupId = groupId
       if (difficulty) word.difficulty = difficulty
+      word.details = details?.trim() || undefined
+      word.example = example?.trim() || undefined
+      dataService.saveWords(words.value)
+    }
+  }
+
+  const updateWordStats = (id: string, isCorrect: boolean) => {
+    const word = words.value.find(w => w.id === id)
+    if (word) {
+      if (isCorrect) {
+        word.correctAttempts++
+        if (word.wrongAttempts > 0) {
+          word.wrongAttempts--
+        }
+      } else {
+        word.wrongAttempts++
+      }
+      word.lastReviewed = new Date().toISOString()
       dataService.saveWords(words.value)
     }
   }
@@ -95,6 +117,22 @@ export const useAppStore = () => {
 
   const getWordsByGroup = (groupId: string) => {
     return words.value.filter(word => word.groupId === groupId)
+  }
+
+  const getWordsForStudy = (limit: number = 20) => {
+    return [...words.value]
+      .sort((a, b) => {
+        // Prioritize words with more wrong attempts
+        if (a.wrongAttempts !== b.wrongAttempts) {
+          return b.wrongAttempts - a.wrongAttempts
+        }
+        // Then by least recently reviewed
+        if (!a.lastReviewed && !b.lastReviewed) return 0
+        if (!a.lastReviewed) return -1
+        if (!b.lastReviewed) return 1
+        return new Date(a.lastReviewed).getTime() - new Date(b.lastReviewed).getTime()
+      })
+      .slice(0, limit)
   }
 
   const getWordGroups = () => {
@@ -186,8 +224,10 @@ export const useAppStore = () => {
     addWord,
     removeWord,
     updateWord,
+    updateWordStats,
     searchWords,
     getWordsByGroup,
+    getWordsForStudy,
     getWordGroups,
     addWordGroup,
     updateWordGroup,

@@ -62,7 +62,22 @@
             <span v-if="word.difficulty" class="difficulty-badge" :class="word.difficulty">
               {{ word.difficulty }}
             </span>
+            <span v-if="word.wrongAttempts > 0" class="attempts-badge wrong">
+              {{ word.wrongAttempts }} wrong
+            </span>
+            <span v-if="word.correctAttempts > 0" class="attempts-badge correct">
+              {{ word.correctAttempts }} correct
+            </span>
             <span class="created-date">{{ formatDate(word.createdAt) }}</span>
+          </div>
+          
+          <div v-if="word.details || word.example" class="word-details">
+            <div v-if="word.details" class="details">
+              <strong>Note:</strong> {{ word.details }}
+            </div>
+            <div v-if="word.example" class="example">
+              <strong>Example:</strong> {{ word.example }}
+            </div>
           </div>
         </div>
 
@@ -116,6 +131,26 @@
               <option value="intermediate">Intermediate</option>
               <option value="advanced">Advanced</option>
             </select>
+          </div>
+
+          <div class="form-group">
+            <label for="details">Details <span class="optional">(optional)</span></label>
+            <textarea 
+              id="details"
+              v-model="wordForm.details" 
+              placeholder="Grammar notes, pronunciation tips, etc."
+              rows="2"
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="example">Usage Example <span class="optional">(optional)</span></label>
+            <textarea 
+              id="example"
+              v-model="wordForm.example" 
+              placeholder="e.g., Ciao Maria! Come stai? (Hi Maria! How are you?)"
+              rows="3"
+            ></textarea>
           </div>
 
           <div class="modal-actions">
@@ -235,7 +270,9 @@ const editingWord = ref<Word | null>(null)
 const wordForm = ref({
   italian: '',
   english: '',
-  difficulty: '' as '' | 'beginner' | 'intermediate' | 'advanced'
+  difficulty: '' as '' | 'beginner' | 'intermediate' | 'advanced',
+  details: '',
+  example: ''
 })
 
 const groupForm = ref({
@@ -280,7 +317,9 @@ const editWord = (word: Word) => {
   wordForm.value = {
     italian: word.italian,
     english: word.english,
-    difficulty: word.difficulty || ''
+    difficulty: word.difficulty || '',
+    details: word.details || '',
+    example: word.example || ''
   }
 }
 
@@ -292,14 +331,18 @@ const saveWord = async () => {
         wordForm.value.italian,
         wordForm.value.english,
         editingWord.value.groupId,
-        wordForm.value.difficulty || undefined
+        wordForm.value.difficulty || undefined,
+        wordForm.value.details,
+        wordForm.value.example
       )
     } else {
       await addWord(
         wordForm.value.italian,
         wordForm.value.english,
         groupId.value,
-        wordForm.value.difficulty || undefined
+        wordForm.value.difficulty || undefined,
+        wordForm.value.details,
+        wordForm.value.example
       )
     }
     closeWordModal()
@@ -343,7 +386,9 @@ const closeWordModal = () => {
   wordForm.value = {
     italian: '',
     english: '',
-    difficulty: ''
+    difficulty: '',
+    details: '',
+    example: ''
   }
 }
 
@@ -533,6 +578,48 @@ const closeGroupModal = () => {
   display: flex;
   gap: 1rem;
   align-items: center;
+}
+
+.word-details {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+.word-example {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+  padding: 0.5rem;
+  background: var(--bg-tertiary);
+  border-radius: 0.25rem;
+  border-left: 3px solid var(--primary-color);
+}
+
+.word-stats {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.stat-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 1rem;
+  font-weight: 600;
+}
+
+.stat-badge.correct {
+  background: rgba(34, 197, 94, 0.1);
+  color: #059669;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.stat-badge.wrong {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .difficulty-badge {

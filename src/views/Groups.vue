@@ -2,9 +2,9 @@
   <div class="groups-container">
     <div class="header">
       <h2>Word Categories</h2>
-      <button @click="showAddGroupModal = true" class="btn btn-primary">
-        <span class="icon">➕</span>
-        Add Category
+      <button @click="showAddGroupModal = true" class="btn btn-primary add-category-btn">
+        <span class="btn-icon">➕</span>
+        <span class="btn-text">Add New Category</span>
       </button>
     </div>
 
@@ -279,13 +279,49 @@ const closeModal = () => {
 }
 
 .btn-primary {
-  background: var(--primary-color);
+  background: linear-gradient(135deg, var(--primary-color), #4f46e5);
   color: white;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  border: none;
+  font-weight: 600;
 }
 
 .btn-primary:hover {
-  background: var(--primary-hover);
-  transform: translateY(-2px);
+  background: linear-gradient(135deg, var(--primary-hover), #4338ca);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.add-category-btn {
+  position: relative;
+  overflow: hidden;
+  min-width: 160px;
+  justify-content: center;
+}
+
+.add-category-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.add-category-btn:hover::before {
+  left: 100%;
+}
+
+.btn-icon {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.btn-text {
+  font-size: 0.95rem;
+  letter-spacing: 0.3px;
 }
 
 .btn-secondary {

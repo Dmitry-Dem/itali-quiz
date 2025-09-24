@@ -22,6 +22,10 @@ export interface Word {
   english: string
   groupId: string
   difficulty?: 'beginner' | 'intermediate' | 'advanced'
+  details?: string
+  example?: string
+  wrongAttempts: number
+  correctAttempts: number
   createdAt: string
   lastReviewed: string | null
 }
@@ -53,6 +57,10 @@ class DataService {
           english: 'Hello',
           groupId: 'default-group',
           difficulty: 'beginner',
+          details: 'Common greeting used at any time of day',
+          example: 'Ciao Maria! Come stai? (Hi Maria! How are you?)',
+          wrongAttempts: 0,
+          correctAttempts: 0,
           createdAt: new Date().toISOString(),
           lastReviewed: null
         }
