@@ -2,21 +2,47 @@
   <div id="app" :data-theme="theme">
     <nav class="nav-header safe-area-top">
       <div class="container">
-        <div class="flex justify-between items-center">
+        <div class="nav-content">
           <router-link to="/" class="logo">
             <h2 class="text-xl font-bold">🇮🇹 Vocab</h2>
           </router-link>
           
-          <div class="nav-links">
+          <div class="nav-links desktop-nav">
             <router-link to="/" class="nav-link">Home</router-link>
             <router-link to="/groups" class="nav-link">Categories</router-link>
             <router-link to="/words" class="nav-link">All Words</router-link>
           </div>
           
-          <button @click="toggleTheme" class="btn btn-icon btn-secondary">
+          <div class="mobile-nav-controls">
+            <button @click="toggleTheme" class="btn btn-icon btn-secondary">
+              <span v-if="theme === 'light'">🌙</span>
+              <span v-else>☀️</span>
+            </button>
+            <button @click="showMobileMenu = !showMobileMenu" class="btn btn-icon btn-secondary mobile-menu-toggle">
+              <span v-if="!showMobileMenu">☰</span>
+              <span v-else>✕</span>
+            </button>
+          </div>
+          
+          <button @click="toggleTheme" class="btn btn-icon btn-secondary desktop-theme-toggle">
             <span v-if="theme === 'light'">🌙</span>
             <span v-else>☀️</span>
           </button>
+        </div>
+        
+        <div class="mobile-nav" :class="{ 'mobile-nav-open': showMobileMenu }">
+          <router-link to="/" class="nav-link mobile-nav-link" @click="showMobileMenu = false">
+            <span class="nav-icon">🏠</span>
+            Home
+          </router-link>
+          <router-link to="/groups" class="nav-link mobile-nav-link" @click="showMobileMenu = false">
+            <span class="nav-icon">📚</span>
+            Categories
+          </router-link>
+          <router-link to="/words" class="nav-link mobile-nav-link" @click="showMobileMenu = false">
+            <span class="nav-icon">📝</span>
+            All Words
+          </router-link>
         </div>
       </div>
     </nav>
@@ -29,9 +55,10 @@
 
 <script setup lang="ts">
 import { useAppStore } from './composables/useAppStore'
-import { watch, onMounted } from 'vue'
+import { watch, onMounted, ref } from 'vue'
 
 const { theme, setTheme } = useAppStore()
+const showMobileMenu = ref(false)
 
 const toggleTheme = () => {
   setTheme(theme.value === 'light' ? 'dark' : 'light')
@@ -75,6 +102,12 @@ onMounted(() => {
   color: var(--text-primary);
 }
 
+.nav-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .nav-links {
   display: flex;
   gap: 2rem;
@@ -100,6 +133,46 @@ onMounted(() => {
   background: var(--primary-color)20;
 }
 
+.mobile-nav-controls {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mobile-menu-toggle {
+  font-size: 1.25rem;
+}
+
+.desktop-theme-toggle {
+  display: block;
+}
+
+.mobile-nav {
+  display: none;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.mobile-nav-open {
+  display: flex;
+}
+
+.mobile-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+}
+
+.nav-icon {
+  font-size: 1.25rem;
+}
+
 .main-content {
   flex: 1;
   padding: 2rem 0;
@@ -112,22 +185,32 @@ onMounted(() => {
     padding: 0.75rem 0;
   }
   
-  .flex {
-    flex-direction: column;
-    gap: 1rem;
+  .desktop-nav {
+    display: none;
   }
   
-  .nav-links {
-    gap: 1rem;
+  .desktop-theme-toggle {
+    display: none;
   }
   
-  .nav-link {
-    padding: 0.5rem;
-    font-size: 0.875rem;
+  .mobile-nav-controls {
+    display: flex;
+  }
+  
+  .mobile-nav {
+    display: flex;
+  }
+  
+  .mobile-nav:not(.mobile-nav-open) {
+    display: none;
   }
   
   .main-content {
     padding: 1rem 0;
+  }
+  
+  .logo h2 {
+    font-size: 1.25rem;
   }
 }
 </style>
