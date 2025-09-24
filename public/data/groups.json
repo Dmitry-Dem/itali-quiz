@@ -38,5 +38,13 @@
     "color": "#8b5cf6",
     "icon": "👋",
     "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "top1k-group",
+    "name": "Italiano Top 1K",
+    "description": "The 1000 most common Italian words",
+    "color": "#ec4899",
+    "icon": "🇮🇹",
+    "createdAt": "2024-01-01T00:00:00.000Z"
   }
 ]
