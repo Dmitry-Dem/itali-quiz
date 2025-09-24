@@ -3,10 +3,10 @@ import './style.css'
 import App from './App.vue'
 import router from './router'
 
-// Register service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
+    const swPath = import.meta.env.BASE_URL + 'sw.js'
+    navigator.serviceWorker.register(swPath)
       .then((registration) => {
         console.log('SW registered: ', registration)
       })

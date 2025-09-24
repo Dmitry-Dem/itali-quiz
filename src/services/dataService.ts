@@ -28,7 +28,7 @@ class DataService {
     }
 
     try {
-      const response = await fetch('/data/words.json')
+      const response = await fetch(import.meta.env.BASE_URL + 'data/words.json')
       if (!response.ok) {
         throw new Error('Failed to load words')
       }
@@ -61,7 +61,7 @@ class DataService {
     }
 
     try {
-      const response = await fetch('/data/settings.json')
+      const response = await fetch(import.meta.env.BASE_URL + 'data/settings.json')
       if (!response.ok) {
         throw new Error('Failed to load settings')
       }

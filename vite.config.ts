@@ -7,10 +7,16 @@ export default defineConfig(({ command }) => ({
   plugins: [
     vue(),
     VitePWA({
+      registerType: 'autoUpdate',
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,json}'],
+        navigateFallback: undefined
+      },
       manifest: {
         name: 'ItaliQuiz',
         short_name: 'ItaliQuiz',
-        start_url: '/itali-quiz/',
+        start_url: command === 'build' ? '/itali-quiz/' : '/',
+        scope: command === 'build' ? '/itali-quiz/' : '/',
         display: 'standalone',
         background_color: '#ffffff',
         theme_color: '#42b883',
