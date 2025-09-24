@@ -2,8 +2,8 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
 
-export default defineConfig(() => ({
-  base: '/Itali-quiz/',
+export default defineConfig(({ command }) => ({
+  base: command === 'build' ? '/itali-quiz/' : '/',
   plugins: [
     vue(),
     VitePWA({
@@ -15,8 +15,8 @@ export default defineConfig(() => ({
       manifest: {
         name: 'ItaliQuiz',
         short_name: 'ItaliQuiz',
-        start_url: '/Itali-quiz/',
-        scope: '/Itali-quiz/',
+        start_url: command === 'build' ? '/itali-quiz/' : '/',
+        scope: command === 'build' ? '/itali-quiz/' : '/',
         display: 'standalone',
         background_color: '#ffffff',
         theme_color: '#42b883',
