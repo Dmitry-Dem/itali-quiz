@@ -1,7 +1,6 @@
 <template>
   <div class="home-page">
     <div class="container">
-      <!-- Hero Section -->
       <div class="hero-section animate-slide-down">
         <div class="hero-content">
           <h1 class="hero-title">
@@ -21,7 +20,6 @@
         </div>
       </div>
 
-      <!-- Quick Actions -->
       <div class="quick-actions animate-slide-up">
         <h2 class="section-title">Quick Actions</h2>
         
@@ -36,6 +34,12 @@
             <div class="action-icon">➕</div>
             <h3 class="action-title">Add New Word</h3>
             <p class="action-description">Expand your vocabulary with new Italian words</p>
+          </div>
+          
+          <div class="action-card" @click="showBulkImportModal = true">
+            <div class="action-icon">📝</div>
+            <h3 class="action-title">Bulk Import</h3>
+            <p class="action-description">Import multiple words from text format</p>
           </div>
           
           <div class="action-card" @click="showDataModal = true">
@@ -58,7 +62,6 @@
         </div>
       </div>
 
-      <!-- Recent Words -->
       <div class="recent-words animate-fade-in" v-if="recentWords.length > 0">
         <h2 class="section-title">Recently Added</h2>
         
@@ -72,11 +75,17 @@
               <div class="italian-word">{{ word.italian }}</div>
               <div class="english-word">{{ word.english }}</div>
             </div>
+            <button 
+              @click="deleteWord(word.id)" 
+              class="delete-btn"
+              title="Delete word"
+            >
+              🗑️
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Word Groups -->
       <div class="word-groups animate-fade-in">
         <div class="section-header">
           <h2 class="section-title">Word Groups</h2>
@@ -105,7 +114,6 @@
       </div>
     </div>
 
-    <!-- Add Word Modal -->
     <div v-if="showAddModal" class="modal-overlay" @click="closeAddModal">
       <div class="modal add-word-modal" @click.stop>
         <div class="modal-header">
@@ -176,7 +184,6 @@
       </div>
     </div>
 
-    <!-- Data Management Modal -->
     <div v-if="showDataModal" class="modal-overlay" @click="closeDataModal">
       <div class="modal data-modal" @click.stop>
         <div class="modal-header">
@@ -211,7 +218,90 @@
       </div>
     </div>
 
-    <!-- Confirmation Modal -->
+    <div v-if="showBulkImportModal" class="modal-overlay" @click="closeBulkImportModal">
+      <div class="modal bulk-import-modal" @click.stop>
+        <div class="modal-header">
+          <h3>Bulk Import Words</h3>
+          <button @click="closeBulkImportModal" class="close-btn">×</button>
+        </div>
+        
+        <div class="bulk-import-content">
+          <div class="instructions">
+            <h4>Import Format</h4>
+            <p>Enter your words in this format (one per line):</p>
+            <code>italian - english - description</code>
+            <p class="example">Example:<br>
+              ciao - hello - greeting<br>
+              grazie - thank you - expression of gratitude<br>
+              casa - house - building where people live
+            </p>
+          </div>
+          
+          <div class="form-group">
+            <label>Group</label>
+            <select v-model="bulkImport.groupId" required>
+              <option value="">Select a group...</option>
+              <option v-for="group in wordGroups" :key="group.id" :value="group.id">
+                {{ group.name }}
+              </option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Difficulty (Optional)</label>
+            <select v-model="bulkImport.difficulty">
+              <option value="">Select difficulty...</option>
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Words to Import</label>
+            <textarea 
+              v-model="bulkImport.text" 
+              placeholder="Enter words in format: italian - english - description"
+              rows="10"
+              class="bulk-text-area"
+            ></textarea>
+          </div>
+          
+          <div v-if="bulkImport.preview.length > 0" class="preview-section">
+            <h4>Preview ({{ bulkImport.preview.length }} words)</h4>
+            <div class="preview-list">
+              <div v-for="(word, index) in bulkImport.preview.slice(0, 5)" :key="index" class="preview-item">
+                <span class="italian">{{ word.italian }}</span>
+                <span class="separator">→</span>
+                <span class="english">{{ word.english }}</span>
+                <span v-if="word.details" class="details">({{ word.details }})</span>
+              </div>
+              <div v-if="bulkImport.preview.length > 5" class="more-items">
+                ... and {{ bulkImport.preview.length - 5 }} more words
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="button" @click="parseBulkText" class="btn btn-secondary">
+              🔍 Preview Words
+            </button>
+            <button type="button" @click="closeBulkImportModal" class="btn btn-secondary">
+              Cancel
+            </button>
+            <button 
+              type="button" 
+              @click="importBulkWords" 
+              class="btn btn-primary"
+              :disabled="bulkImport.preview.length === 0"
+            >
+              Import {{ bulkImport.preview.length }} Words
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div v-if="showConfirmModal" class="modal-overlay">
       <div class="modal confirm-modal">
         <div class="modal-header">
@@ -237,11 +327,12 @@
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { useAppStore } from '../composables/useAppStore'
 
-const { words, wordGroups, addWord, exportData, importData } = useAppStore()
+const { words, wordGroups, addWord, removeWord, exportData, importData } = useAppStore()
 
 const showAddModal = ref(false)
 const showDataModal = ref(false)
 const showConfirmModal = ref(false)
+const showBulkImportModal = ref(false)
 
 const newWord = ref({
   italian: '',
@@ -249,6 +340,17 @@ const newWord = ref({
   groupId: '',
   difficulty: '',
   details: ''
+})
+
+const bulkImport = ref({
+  text: '',
+  groupId: '',
+  difficulty: '',
+  preview: [] as Array<{
+    italian: string
+    english: string
+    details?: string
+  }>
 })
 
 const confirmModal = ref({
@@ -345,9 +447,85 @@ const cancelConfirm = () => {
   }
 }
 
-// Lifecycle
+const closeBulkImportModal = () => {
+  showBulkImportModal.value = false
+  bulkImport.value = {
+    text: '',
+    groupId: '',
+    difficulty: '',
+    preview: []
+  }
+}
+
+const parseBulkText = () => {
+  const lines = bulkImport.value.text.split('\n').map(line => line.trim()).filter(line => line)
+  const parsed: Array<{ italian: string; english: string; details?: string }> = []
+  
+  for (const line of lines) {
+    const parts = line.split(' - ').map(part => part.trim())
+    
+    if (parts.length >= 2) {
+      const italian = parts[0]
+      const english = parts[1]
+      const details = parts.length > 2 ? parts.slice(2).join(' - ') : undefined
+      
+      if (italian && english) {
+        parsed.push({ italian, english, details })
+      }
+    }
+  }
+  
+  bulkImport.value.preview = parsed
+}
+
+const importBulkWords = async () => {
+  if (!bulkImport.value.groupId) {
+    alert('Please select a group for the words')
+    return
+  }
+  
+  if (bulkImport.value.preview.length === 0) {
+    alert('No valid words to import. Please check the format.')
+    return
+  }
+  
+  try {
+    const difficulty = bulkImport.value.difficulty as 'beginner' | 'intermediate' | 'advanced' | ''
+    
+    for (const word of bulkImport.value.preview) {
+      await addWord(
+        word.italian,
+        word.english,
+        bulkImport.value.groupId,
+        difficulty || undefined,
+        word.details
+      )
+    }
+    
+    alert(`Successfully imported ${bulkImport.value.preview.length} words!`)
+    closeBulkImportModal()
+  } catch (error) {
+    console.error('Error importing words:', error)
+    alert('Error importing words. Please try again.')
+  }
+}
+
+const deleteWord = (wordId: string) => {
+  const word = words.value.find(w => w.id === wordId)
+  if (!word) return
+  
+  confirmModal.value = {
+    title: 'Delete Word',
+    message: `Are you sure you want to delete "${word.italian}" (${word.english})?`,
+    action: () => {
+      removeWord(wordId)
+      showConfirmModal.value = false
+    }
+  }
+  showConfirmModal.value = true
+}
+
 onMounted(() => {
-  // Focus on Italian input when add modal opens
   if (showAddModal.value) {
     nextTick(() => {
       italianInput.value?.focus()
@@ -595,11 +773,19 @@ onMounted(() => {
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-color);
   transition: all 0.2s;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .word-card:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
+}
+
+.word-content {
+  flex: 1;
 }
 
 .italian-word {
@@ -611,6 +797,24 @@ onMounted(() => {
 
 .english-word {
   color: var(--text-secondary);
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.2s;
+  opacity: 0.6;
+  margin-left: 1rem;
+}
+
+.delete-btn:hover {
+  opacity: 1;
+  background: rgba(239, 68, 68, 0.1);
+  transform: scale(1.1);
 }
 
 /* Groups Grid */
@@ -802,6 +1006,116 @@ onMounted(() => {
   margin: 0 0 1rem 0;
   color: var(--text-secondary);
   font-size: 0.9rem;
+}
+
+/* Bulk Import Modal */
+.bulk-import-modal {
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.bulk-import-content {
+  padding: 1.5rem;
+}
+
+.instructions {
+  background: var(--bg-tertiary);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid var(--bg-accent);
+}
+
+.instructions h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+}
+
+.instructions p {
+  margin: 0.5rem 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.instructions code {
+  background: var(--bg-secondary);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  color: var(--bg-accent);
+  font-size: 0.9rem;
+}
+
+.instructions .example {
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  background: var(--bg-secondary);
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+  white-space: pre-line;
+}
+
+.bulk-text-area {
+  min-height: 200px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  resize: vertical;
+}
+
+.preview-section {
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.preview-section h4 {
+  margin: 0 0 1rem 0;
+  color: var(--text-primary);
+}
+
+.preview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.preview-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  background: var(--bg-secondary);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.preview-item .italian {
+  font-weight: 600;
+  color: var(--bg-accent);
+}
+
+.preview-item .separator {
+  color: var(--text-secondary);
+}
+
+.preview-item .english {
+  color: var(--text-primary);
+}
+
+.preview-item .details {
+  color: var(--text-secondary);
+  font-style: italic;
+  font-size: 0.85rem;
+}
+
+.more-items {
+  color: var(--text-secondary);
+  font-style: italic;
+  text-align: center;
+  padding: 0.5rem;
 }
 
 /* Button Styles */
