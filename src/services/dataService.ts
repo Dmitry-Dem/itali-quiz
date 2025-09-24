@@ -1,4 +1,3 @@
-// Data service for handling JSON file operations
 export interface AppSettings {
   theme: 'light' | 'dark'
   language: string
@@ -7,11 +6,21 @@ export interface AppSettings {
   lastBackup: string | null
 }
 
+export interface WordGroup {
+  id: string
+  name: string
+  description?: string
+  color: string
+  icon: string
+  createdAt: string
+  wordCount?: number
+}
+
 export interface Word {
   id: string
   italian: string
   english: string
-  category?: string
+  groupId: string
   difficulty?: 'beginner' | 'intermediate' | 'advanced'
   createdAt: string
   lastReviewed: string | null
@@ -20,8 +29,8 @@ export interface Word {
 class DataService {
   private wordsCache: Word[] | null = null
   private settingsCache: AppSettings | null = null
+  private groupsCache: WordGroup[] | null = null
 
-  // Load words from JSON file
   async loadWords(): Promise<Word[]> {
     if (this.wordsCache) {
       return this.wordsCache
@@ -37,13 +46,12 @@ class DataService {
       return words
     } catch (error) {
       console.error('Error loading words:', error)
-      // Fallback to default words
       const defaultWords: Word[] = [
         {
           id: '1',
           italian: 'Ciao',
           english: 'Hello',
-          category: 'greetings',
+          groupId: 'default-group',
           difficulty: 'beginner',
           createdAt: new Date().toISOString(),
           lastReviewed: null
@@ -54,7 +62,6 @@ class DataService {
     }
   }
 
-  // Load settings from JSON file
   async loadSettings(): Promise<AppSettings> {
     if (this.settingsCache) {
       return this.settingsCache
@@ -70,7 +77,6 @@ class DataService {
       return settings
     } catch (error) {
       console.error('Error loading settings:', error)
-      // Fallback to default settings
       const defaultSettings: AppSettings = {
         theme: 'dark',
         language: 'en',
@@ -83,21 +89,17 @@ class DataService {
     }
   }
 
-  // Save words to localStorage (since we can't write to JSON files in browser)
   saveWords(words: Word[]): void {
     this.wordsCache = words
     localStorage.setItem('italian-vocab-words', JSON.stringify(words))
   }
 
-  // Save settings to localStorage
   saveSettings(settings: AppSettings): void {
     this.settingsCache = settings
     localStorage.setItem('italian-vocab-settings', JSON.stringify(settings))
   }
 
-  // Load from localStorage if available, otherwise from JSON
   async loadWordsWithFallback(): Promise<Word[]> {
-    // First try localStorage
     const localWords = localStorage.getItem('italian-vocab-words')
     if (localWords) {
       try {
@@ -109,13 +111,10 @@ class DataService {
       }
     }
 
-    // Fallback to JSON file
     return this.loadWords()
   }
 
-  // Load from localStorage if available, otherwise from JSON
   async loadSettingsWithFallback(): Promise<AppSettings> {
-    // First try localStorage
     const localSettings = localStorage.getItem('italian-vocab-settings')
     if (localSettings) {
       try {
@@ -127,11 +126,9 @@ class DataService {
       }
     }
 
-    // Fallback to JSON file
     return this.loadSettings()
   }
 
-  // Export data as JSON for download
   exportData(): { words: Word[], settings: AppSettings } {
     return {
       words: this.wordsCache || [],
@@ -145,7 +142,6 @@ class DataService {
     }
   }
 
-  // Import data from uploaded JSON
   importData(data: { words?: Word[], settings?: AppSettings }): void {
     if (data.words) {
       this.saveWords(data.words)
@@ -155,10 +151,59 @@ class DataService {
     }
   }
 
-  // Clear cache (useful for testing)
+  async loadWordGroups(): Promise<WordGroup[]> {
+    if (this.groupsCache) {
+      return this.groupsCache
+    }
+
+    try {
+      const response = await fetch(import.meta.env.BASE_URL + 'data/groups.json')
+      if (!response.ok) {
+        throw new Error('Failed to load word groups')
+      }
+      const groups = await response.json()
+      this.groupsCache = groups
+      return groups
+    } catch (error) {
+      console.error('Error loading word groups:', error)
+      const defaultGroups: WordGroup[] = [
+        {
+          id: 'default-group',
+          name: 'General',
+          description: 'General vocabulary words',
+          color: '#3b82f6',
+          icon: '📚',
+          createdAt: new Date().toISOString()
+        }
+      ]
+      this.groupsCache = defaultGroups
+      return defaultGroups
+    }
+  }
+
+  async loadWordGroupsWithFallback(): Promise<WordGroup[]> {
+    const localGroups = localStorage.getItem('italian-vocab-groups')
+    if (localGroups) {
+      try {
+        const groups = JSON.parse(localGroups)
+        this.groupsCache = groups
+        return groups
+      } catch (error) {
+        console.error('Error parsing local groups:', error)
+      }
+    }
+    return this.loadWordGroups()
+  }
+
+  saveWordGroups(groups: WordGroup[]): void {
+    this.groupsCache = groups
+    localStorage.setItem('italian-vocab-groups', JSON.stringify(groups))
+  }
+
   clearCache(): void {
     this.wordsCache = null
     this.settingsCache = null
+    this.groupsCache = null
   }
 }
 

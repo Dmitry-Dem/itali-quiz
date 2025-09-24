@@ -1,0 +1,42 @@
+[
+  {
+    "id": "default-group",
+    "name": "General",
+    "description": "General vocabulary words",
+    "color": "#3b82f6",
+    "icon": "📚",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "food-group",
+    "name": "Food & Dining",
+    "description": "Food, drinks, and restaurant vocabulary",
+    "color": "#ef4444",
+    "icon": "🍝",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "travel-group",
+    "name": "Travel",
+    "description": "Transportation, directions, and travel terms",
+    "color": "#10b981",
+    "icon": "✈️",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "family-group",
+    "name": "Family & People",
+    "description": "Family members, relationships, and people",
+    "color": "#f59e0b",
+    "icon": "👨‍👩‍👧‍👦",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "greetings-group",
+    "name": "Greetings",
+    "description": "Common greetings and polite expressions",
+    "color": "#8b5cf6",
+    "icon": "👋",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  }
+]

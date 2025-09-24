@@ -31,18 +31,15 @@ const toggleTheme = () => {
   setTheme(theme.value === 'light' ? 'dark' : 'light')
 }
 
-// Apply theme to document root
 const applyTheme = (currentTheme: string) => {
   document.documentElement.setAttribute('data-theme', currentTheme)
   document.body.setAttribute('data-theme', currentTheme)
 }
 
-// Watch for theme changes and apply to document
 watch(theme, (newTheme) => {
   applyTheme(newTheme)
 }, { immediate: true })
 
-// Apply theme on mount
 onMounted(() => {
   applyTheme(theme.value)
 })

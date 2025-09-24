@@ -1,10 +1,11 @@
 import { ref, computed, onMounted } from 'vue'
-import { dataService, type Word, type AppSettings } from '../services/dataService'
+import { dataService, type Word, type AppSettings, type WordGroup } from '../services/dataService'
 
-export { type Word, type AppSettings } from '../services/dataService'
+export { type Word, type AppSettings, type WordGroup } from '../services/dataService'
 
 export const useAppStore = () => {
   const words = ref<Word[]>([])
+  const wordGroups = ref<WordGroup[]>([])
   const settings = ref<AppSettings>({
     theme: 'dark',
     language: 'en',
@@ -18,19 +19,20 @@ export const useAppStore = () => {
   
   const theme = computed(() => settings.value.theme)
   
-  // Load initial data
   const loadData = async () => {
     try {
       isLoading.value = true
       error.value = null
       
-      const [loadedWords, loadedSettings] = await Promise.all([
+      const [loadedWords, loadedSettings, loadedGroups] = await Promise.all([
         dataService.loadWordsWithFallback(),
-        dataService.loadSettingsWithFallback()
+        dataService.loadSettingsWithFallback(),
+        dataService.loadWordGroupsWithFallback()
       ])
       
       words.value = loadedWords
       settings.value = loadedSettings
+      wordGroups.value = loadedGroups
     } catch (err) {
       error.value = 'Failed to load data'
       console.error('Error loading data:', err)
@@ -44,12 +46,12 @@ export const useAppStore = () => {
     dataService.saveSettings(settings.value)
   }
   
-  const addWord = (italian: string, english: string, category?: string, difficulty?: 'beginner' | 'intermediate' | 'advanced') => {
+  const addWord = (italian: string, english: string, groupId?: string, difficulty?: 'beginner' | 'intermediate' | 'advanced') => {
     const newWord: Word = {
       id: Date.now().toString(),
       italian: italian.trim(),
       english: english.trim(),
-      category: category || 'general',
+      groupId: groupId || 'default-group',
       difficulty: difficulty || 'beginner',
       createdAt: new Date().toISOString(),
       lastReviewed: null
@@ -66,12 +68,12 @@ export const useAppStore = () => {
     }
   }
   
-  const updateWord = (id: string, italian: string, english: string, category?: string, difficulty?: 'beginner' | 'intermediate' | 'advanced') => {
+  const updateWord = (id: string, italian: string, english: string, groupId?: string, difficulty?: 'beginner' | 'intermediate' | 'advanced') => {
     const word = words.value.find(w => w.id === id)
     if (word) {
       word.italian = italian.trim()
       word.english = english.trim()
-      if (category) word.category = category
+      if (groupId) word.groupId = groupId
       if (difficulty) word.difficulty = difficulty
       dataService.saveWords(words.value)
     }
@@ -81,20 +83,22 @@ export const useAppStore = () => {
     if (!query.trim()) return words.value
     
     const lowercaseQuery = query.toLowerCase()
-    return words.value.filter(word => 
-      word.italian.toLowerCase().includes(lowercaseQuery) ||
-      word.english.toLowerCase().includes(lowercaseQuery) ||
-      (word.category && word.category.toLowerCase().includes(lowercaseQuery))
-    )
+    return words.value.filter(word => {
+      const group = wordGroups.value.find(g => g.id === word.groupId)
+      const groupName = group?.name.toLowerCase() || ''
+      
+      return word.italian.toLowerCase().includes(lowercaseQuery) ||
+             word.english.toLowerCase().includes(lowercaseQuery) ||
+             groupName.includes(lowercaseQuery)
+    })
   }
 
-  const getWordsByCategory = (category: string) => {
-    return words.value.filter(word => word.category === category)
+  const getWordsByGroup = (groupId: string) => {
+    return words.value.filter(word => word.groupId === groupId)
   }
 
-  const getCategories = () => {
-    const categories = new Set(words.value.map(word => word.category).filter(Boolean))
-    return Array.from(categories)
+  const getWordGroups = () => {
+    return wordGroups.value
   }
 
   const exportData = () => {
@@ -115,7 +119,7 @@ export const useAppStore = () => {
         try {
           const data = JSON.parse(e.target?.result as string)
           dataService.importData(data)
-          loadData() // Reload data
+          loadData()
           resolve()
         } catch (error) {
           reject(error)
@@ -126,13 +130,13 @@ export const useAppStore = () => {
     })
   }
   
-  // Initialize data when composable is used
   onMounted(() => {
     loadData()
   })
   
   return {
     words: computed(() => words.value),
+    wordGroups: computed(() => wordGroups.value),
     settings: computed(() => settings.value),
     theme,
     isLoading: computed(() => isLoading.value),
@@ -143,8 +147,8 @@ export const useAppStore = () => {
     removeWord,
     updateWord,
     searchWords,
-    getWordsByCategory,
-    getCategories,
+    getWordsByGroup,
+    getWordGroups,
     exportData,
     importData
   }

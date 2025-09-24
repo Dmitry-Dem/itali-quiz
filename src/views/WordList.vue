@@ -227,10 +227,8 @@ import { useAppStore, type Word } from '../composables/useAppStore'
 
 const { words, addWord, removeWord, updateWord, searchWords } = useAppStore()
 
-// Search functionality
 const searchQuery = ref('')
 
-// Add word modal
 const showAddModal = ref(false)
 const addItalianInput = ref<HTMLInputElement>()
 const newWord = ref({
@@ -240,7 +238,6 @@ const newWord = ref({
   difficulty: 'beginner' as 'beginner' | 'intermediate' | 'advanced'
 })
 
-// Edit functionality
 const editingId = ref<string | null>(null)
 const editItalianInput = ref<HTMLInputElement>()
 const editForm = ref({
@@ -250,7 +247,6 @@ const editForm = ref({
   difficulty: 'beginner' as 'beginner' | 'intermediate' | 'advanced'
 })
 
-// Delete functionality
 const showDeleteModal = ref(false)
 const wordToDelete = ref<Word | null>(null)
 
@@ -322,7 +318,6 @@ const deleteWord = () => {
   }
 }
 
-// Focus input when add modal opens
 nextTick(() => {
   if (showAddModal.value && addItalianInput.value) {
     addItalianInput.value.focus()

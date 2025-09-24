@@ -244,7 +244,6 @@ const handleImport = async () => {
   }
 }
 
-// Focus input when modal opens
 nextTick(() => {
   if (showAddModal.value && italianInput.value) {
     italianInput.value.focus()
