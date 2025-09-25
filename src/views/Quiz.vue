@@ -145,10 +145,6 @@
           {{ currentQuestion.question }}
         </div>
 
-        <div class="question-details" v-if="currentQuestion.details">
-          {{ currentQuestion.details }}
-        </div>
-
         <div v-if="quizMode === 'write'" class="write-mode">
           <input 
             type="text" 
@@ -195,6 +191,10 @@
           
           <div class="correct-answer" v-if="!lastAnswerCorrect">
             <strong>Correct answer:</strong> {{ currentQuestion.correctAnswer }}
+          </div>
+
+          <div class="question-notes" v-if="currentQuestion.details">
+            <strong>Notes:</strong> {{ currentQuestion.details }}
           </div>
 
           <button @click="nextQuestion" class="btn btn-primary next-btn">
@@ -725,12 +725,7 @@ onMounted(() => {
   margin-bottom: 1rem;
 }
 
-.question-details {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  margin-bottom: 2rem;
-  font-style: italic;
-}
+
 
 .write-mode {
   display: flex;
@@ -832,6 +827,17 @@ onMounted(() => {
 .correct-answer {
   color: var(--text-secondary);
   margin-bottom: 1rem;
+}
+
+.question-notes {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  font-style: italic;
+  background: var(--bg-secondary);
+  padding: 0.75rem;
+  border-radius: 8px;
+  border-left: 3px solid var(--primary-color);
 }
 
 .results-content {
