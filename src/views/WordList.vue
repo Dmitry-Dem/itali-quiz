@@ -480,10 +480,15 @@ nextTick(() => {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 1rem;
 }
 
 .word-content {
   flex: 1;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .italian-text {
@@ -491,12 +496,6 @@ nextTick(() => {
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 0.25rem;
-}
-
-.english-text {
-  color: var(--text-secondary);
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
 }
 
 .english-text {
@@ -510,6 +509,7 @@ nextTick(() => {
   align-items: center;
   gap: 0.75rem;
   flex-wrap: wrap;
+  margin-top: auto;
 }
 
 .category-badge {
@@ -551,9 +551,8 @@ nextTick(() => {
 .word-actions {
   display: flex;
   gap: 0.5rem;
-  margin-left: 1rem;
   align-self: flex-start;
-  margin-top: 0.125rem;
+  flex-shrink: 0;
 }
 
 .action-btn {

@@ -276,7 +276,10 @@ const answerInput = ref<HTMLInputElement>()
 
 const groupWords = computed(() => {
   if (!selectedGroupId.value) return []
-  return allWords.value.filter(word => word.groupId === selectedGroupId.value)
+  return allWords.value.filter(word => 
+    word.groupId === selectedGroupId.value && 
+    word.learned !== true
+  )
 })
 
 const maxWords = computed(() => groupWords.value.length)

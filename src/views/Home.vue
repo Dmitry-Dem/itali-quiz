@@ -228,12 +228,10 @@
         <div class="bulk-import-content">
           <div class="instructions">
             <h4>Import Format</h4>
-            <p>Enter your words in this format (one per line):</p>
-            <code>italian - english - description</code>
+            <p>Enter your words separated by commas:</p>
+            <code>[italian][english][description], [italian][english][description], ...</code>
             <p class="example">Example:<br>
-              ciao - hello - greeting<br>
-              grazie - thank you - expression of gratitude<br>
-              casa - house - building where people live
+              [ciao][hello][greeting], [grazie][thank you][expression of gratitude], [casa][house][building where people live]
             </p>
           </div>
           
@@ -261,7 +259,7 @@
             <label>Words to Import</label>
             <textarea 
               v-model="bulkImport.text" 
-              placeholder="Enter words in format: italian - english - description"
+              placeholder="Enter words separated by commas: [italian][english][description], [italian][english][description], ..."
               rows="10"
               class="bulk-text-area"
             ></textarea>
@@ -462,20 +460,27 @@ const closeBulkImportModal = () => {
 }
 
 const parseBulkText = () => {
-  const lines = bulkImport.value.text.split('\n').map(line => line.trim()).filter(line => line)
-  const parsed: Array<{ italian: string; english: string; details?: string }> = []
+  const text = bulkImport.value.text.trim()
+  if (!text) {
+    bulkImport.value.preview = []
+    return
+  }
   
-  for (const line of lines) {
-    const parts = line.split(' - ').map(part => part.trim())
+  const parsed: Array<{ italian: string; english: string; details?: string }> = []
+  const regex = /\[([^\]]+)\]\[([^\]]+)\](?:\[([^\]]*)\])?/g
+  
+  let match
+  while ((match = regex.exec(text)) !== null) {
+    const italian = match[1].trim()
+    const english = match[2].trim()
+    const details = match[3] ? match[3].trim() : undefined
     
-    if (parts.length >= 2) {
-      const italian = parts[0]
-      const english = parts[1]
-      const details = parts.length > 2 ? parts.slice(2).join(' - ') : undefined
-      
-      if (italian && english) {
-        parsed.push({ italian, english, details })
-      }
+    if (italian && english) {
+      parsed.push({ 
+        italian, 
+        english, 
+        details: details || undefined 
+      })
     }
   }
   

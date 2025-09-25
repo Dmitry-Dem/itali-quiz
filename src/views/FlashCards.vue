@@ -154,10 +154,12 @@ const sessionStats = ref({
 
 const words = computed(() => {
   if (isAllWords.value) {
-    return allWords.value.sort((a, b) => (b.wrongAttempts || 0) - (a.wrongAttempts || 0))
+    return allWords.value
+      .filter(word => word.learned !== true)
+      .sort((a, b) => (b.wrongAttempts || 0) - (a.wrongAttempts || 0))
   }
   return allWords.value
-    .filter(word => word.groupId === groupId.value)
+    .filter(word => word.groupId === groupId.value && word.learned !== true)
     .sort((a, b) => (b.wrongAttempts || 0) - (a.wrongAttempts || 0))
 })
 
