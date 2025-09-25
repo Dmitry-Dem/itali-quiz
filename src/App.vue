@@ -50,6 +50,16 @@
     <main class="main-content">
       <router-view />
     </main>
+    
+    <footer class="app-footer">
+      <div class="container">
+        <div class="footer-content">
+          <button @click="refreshPage" class="btn btn-icon btn-secondary refresh-btn" title="Refresh to apply updates">
+            <span>🔄</span>
+          </button>
+        </div>
+      </div>
+    </footer>
   </div>
 </template>
 
@@ -62,6 +72,10 @@ const showMobileMenu = ref(false)
 
 const toggleTheme = () => {
   setTheme(theme.value === 'light' ? 'dark' : 'light')
+}
+
+const refreshPage = () => {
+  window.location.reload()
 }
 
 const applyTheme = (currentTheme: string) => {
@@ -176,8 +190,34 @@ onMounted(() => {
 .main-content {
   flex: 1;
   padding: 2rem 0;
-  min-height: calc(100vh - 80px);
+  min-height: calc(100vh - 120px);
   background-color: var(--bg-primary);
+}
+
+.app-footer {
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  padding: 1rem 0;
+  margin-top: auto;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.refresh-btn {
+  font-size: 1.1rem;
+  transition: transform 0.2s ease;
+}
+
+.refresh-btn:hover {
+  transform: rotate(90deg);
+}
+
+.refresh-btn:active {
+  transform: rotate(180deg);
 }
 
 @media (max-width: 768px) {
@@ -207,6 +247,11 @@ onMounted(() => {
   
   .main-content {
     padding: 1rem 0;
+    min-height: calc(100vh - 100px);
+  }
+  
+  .app-footer {
+    padding: 0.75rem 0;
   }
   
   .logo h2 {

@@ -14,7 +14,7 @@
         
         <div class="hero-stats">
           <div class="stat-card">
-            <div class="stat-number">{{ words.length }}</div>
+            <div class="stat-number">{{ learnedWordsCount }}</div>
             <div class="stat-label">Words Learned</div>
           </div>
         </div>
@@ -366,6 +366,10 @@ const recentWords = computed(() => {
   return [...words.value]
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 6)
+})
+
+const learnedWordsCount = computed(() => {
+  return words.value.filter(word => word.learned === true).length
 })
 
 const getGroupWordCount = (groupId: string) => {
