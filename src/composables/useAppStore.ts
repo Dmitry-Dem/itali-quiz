@@ -100,6 +100,30 @@ export const useAppStore = () => {
       dataService.saveWords(words.value)
     }
   }
+
+  const toggleWordLearned = (id: string) => {
+    const word = words.value.find(w => w.id === id)
+    if (word) {
+      word.learned = !word.learned
+      dataService.saveWords(words.value)
+    }
+  }
+
+  const markWordAsLearned = (id: string) => {
+    const word = words.value.find(w => w.id === id)
+    if (word) {
+      word.learned = true
+      dataService.saveWords(words.value)
+    }
+  }
+
+  const markWordAsNotLearned = (id: string) => {
+    const word = words.value.find(w => w.id === id)
+    if (word) {
+      word.learned = false
+      dataService.saveWords(words.value)
+    }
+  }
   
   const searchWords = (query: string) => {
     if (!query.trim()) return words.value
@@ -115,18 +139,19 @@ export const useAppStore = () => {
     })
   }
 
-  const getWordsByGroup = (groupId: string) => {
-    return words.value.filter(word => word.groupId === groupId)
+  const getWordsByGroup = (groupId: string, includeLearned: boolean = true) => {
+    return words.value.filter(word => 
+      word.groupId === groupId && (includeLearned || !word.learned)
+    )
   }
 
-  const getWordsForStudy = (limit: number = 20) => {
+  const getWordsForStudy = (limit: number = 20, includeLearned: boolean = false) => {
     return [...words.value]
+      .filter(word => includeLearned || !word.learned)
       .sort((a, b) => {
-        // Prioritize words with more wrong attempts
         if (a.wrongAttempts !== b.wrongAttempts) {
           return b.wrongAttempts - a.wrongAttempts
         }
-        // Then by least recently reviewed
         if (!a.lastReviewed && !b.lastReviewed) return 0
         if (!a.lastReviewed) return -1
         if (!b.lastReviewed) return 1
@@ -225,6 +250,9 @@ export const useAppStore = () => {
     removeWord,
     updateWord,
     updateWordStats,
+    toggleWordLearned,
+    markWordAsLearned,
+    markWordAsNotLearned,
     searchWords,
     getWordsByGroup,
     getWordsForStudy,

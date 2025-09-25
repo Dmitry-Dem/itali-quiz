@@ -33,6 +33,14 @@
               ✕
             </button>
           </div>
+          
+          <div class="filter-wrapper">
+            <select v-model="learnedFilter" class="learned-filter">
+              <option value="all">All Words</option>
+              <option value="learned">Learned Only</option>
+              <option value="unlearned">Not Learned</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -68,11 +76,20 @@
                   <span class="difficulty-badge" :class="word.difficulty || 'beginner'">
                     {{ word.difficulty || 'beginner' }}
                   </span>
+                  <span v-if="word.learned" class="learned-badge">✅ Learned</span>
                   <span class="word-date">{{ formatDate(word.createdAt) }}</span>
                 </div>
               </div>
               
               <div class="word-actions">
+                <button 
+                  @click="toggleLearned(word.id)"
+                  class="action-btn learned-btn"
+                  :class="{ 'learned': word.learned }"
+                  :title="word.learned ? 'Mark as not learned' : 'Mark as learned'"
+                >
+                  {{ word.learned ? '✅' : '📚' }}
+                </button>
                 <button 
                   @click="startEdit(word)"
                   class="action-btn edit-btn"
@@ -220,9 +237,10 @@
 import { ref, computed, nextTick } from 'vue'
 import { useAppStore, type Word } from '../composables/useAppStore'
 
-const { words, wordGroups, addWord, removeWord, updateWord, searchWords } = useAppStore()
+const { words, wordGroups, addWord, removeWord, updateWord, searchWords, toggleWordLearned } = useAppStore()
 
 const searchQuery = ref('')
+const learnedFilter = ref('all')
 
 const showAddModal = ref(false)
 const addItalianInput = ref<HTMLInputElement>()
@@ -246,7 +264,15 @@ const showDeleteModal = ref(false)
 const wordToDelete = ref<Word | null>(null)
 
 const filteredWords = computed(() => {
-  return searchWords(searchQuery.value)
+  let filtered = searchWords(searchQuery.value)
+  
+  if (learnedFilter.value === 'learned') {
+    filtered = filtered.filter(word => word.learned)
+  } else if (learnedFilter.value === 'unlearned') {
+    filtered = filtered.filter(word => !word.learned)
+  }
+  
+  return filtered
 })
 
 const getGroupName = (groupId: string) => {
@@ -310,6 +336,10 @@ const confirmDelete = (word: Word) => {
   showDeleteModal.value = true
 }
 
+const toggleLearned = (wordId: string) => {
+  toggleWordLearned(wordId)
+}
+
 const deleteWord = () => {
   if (wordToDelete.value) {
     removeWord(wordToDelete.value.id)
@@ -356,12 +386,38 @@ nextTick(() => {
 }
 
 .search-container {
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
 }
 
 .search-input-wrapper {
   position: relative;
+  flex: 1;
+}
+
+.filter-wrapper {
+  min-width: 150px;
+}
+
+.learned-filter {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.learned-filter:focus {
+  outline: none;
+  border-color: var(--border-color-focus);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
 }
 
 .search-icon {
@@ -423,7 +479,7 @@ nextTick(() => {
 .word-display {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .word-content {
@@ -496,6 +552,8 @@ nextTick(() => {
   display: flex;
   gap: 0.5rem;
   margin-left: 1rem;
+  align-self: flex-start;
+  margin-top: 0.125rem;
 }
 
 .action-btn {
@@ -527,6 +585,34 @@ nextTick(() => {
 
 .delete-btn:hover {
   background-color: #dc2626;
+}
+
+.learned-btn {
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.learned-btn:hover {
+  background-color: var(--bg-accent-hover);
+}
+
+.learned-btn.learned {
+  background-color: #10b981;
+  color: white;
+}
+
+.learned-btn.learned:hover {
+  background-color: #059669;
+}
+
+.learned-badge {
+  background-color: #10b981;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .word-edit {
@@ -684,6 +770,15 @@ nextTick(() => {
   
   .header-actions .btn {
     width: 100%;
+  }
+  
+  .search-container {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .filter-wrapper {
+    min-width: auto;
   }
   
   .word-display {

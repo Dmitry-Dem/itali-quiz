@@ -28,6 +28,7 @@ export interface Word {
   correctAttempts: number
   createdAt: string
   lastReviewed: string | null
+  learned?: boolean
 }
 
 class DataService {

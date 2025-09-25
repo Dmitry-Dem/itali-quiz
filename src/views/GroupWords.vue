@@ -71,6 +71,7 @@
             <span v-if="word.difficulty" class="difficulty-badge" :class="word.difficulty">
               {{ word.difficulty }}
             </span>
+            <span v-if="word.learned" class="learned-badge">✅ Learned</span>
             <span v-if="word.wrongAttempts > 0" class="attempts-badge wrong">
               {{ word.wrongAttempts }} wrong
             </span>
@@ -91,6 +92,14 @@
         </div>
 
         <div class="word-actions">
+          <button 
+            @click="toggleLearned(word.id)" 
+            class="btn-icon learned-toggle"
+            :class="{ 'learned': word.learned }"
+            :title="word.learned ? 'Mark as not learned' : 'Mark as learned'"
+          >
+            {{ word.learned ? '✅' : '📚' }}
+          </button>
           <button @click="editWord(word)" class="btn-icon" title="Edit Word">
             ✏️
           </button>
@@ -269,7 +278,7 @@ import { useAppStore, type Word } from '../composables/useAppStore'
 
 const route = useRoute()
 const router = useRouter()
-const { words, wordGroups, isLoading, loadData, addWord, updateWord, removeWord, updateWordGroup } = useAppStore()
+const { words, wordGroups, isLoading, loadData, addWord, updateWord, removeWord, updateWordGroup, toggleWordLearned } = useAppStore()
 
 const groupId = computed(() => route.params.groupId as string)
 
@@ -324,6 +333,10 @@ const formatDate = (dateString: string) => {
 
 const goToFlashCards = () => {
   router.push(`/flashcards/${groupId.value}`)
+}
+
+const toggleLearned = (wordId: string) => {
+  toggleWordLearned(wordId)
 }
 
 const editWord = (word: Word) => {
@@ -706,6 +719,32 @@ const closeGroupModal = () => {
 
 .btn-icon.danger:hover {
   background: #ef444420;
+}
+
+.btn-icon.learned-toggle {
+  transition: all 0.2s ease;
+}
+
+.btn-icon.learned-toggle:hover {
+  background: var(--bg-accent-hover);
+}
+
+.btn-icon.learned-toggle.learned {
+  background: #10b981;
+  color: white;
+}
+
+.btn-icon.learned-toggle.learned:hover {
+  background: #059669;
+}
+
+.learned-badge {
+  background-color: #10b981;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .modal-overlay {
