@@ -124,7 +124,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAppStore } from '../composables/useAppStore'
 
@@ -161,14 +161,20 @@ const shuffleArray = (array: any[]) => {
   return shuffled
 }
 
-const words = computed(() => {
+const words = ref<any[]>([])
+
+const refreshWords = () => {
   let filteredWords
   if (isAllWords.value) {
     filteredWords = allWords.value.filter(word => word.learned !== true)
   } else {
     filteredWords = allWords.value.filter(word => word.groupId === groupId.value && word.learned !== true)
   }
-  return shuffleArray(filteredWords)
+  words.value = shuffleArray(filteredWords)
+}
+
+watchEffect(() => {
+  refreshWords()
 })
 
 const visibleWords = computed(() => {

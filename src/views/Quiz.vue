@@ -118,7 +118,7 @@
           :disabled="!canStartQuiz"
           class="btn btn-primary start-quiz-btn"
         >
-          🚀 Start Quiz ({{ quizWords.length }} words)
+          🚀 Start Quiz
         </button>
       </div>
     </div>
@@ -189,7 +189,7 @@
             </div>
           </div>
           
-          <div class="correct-answer" v-if="!lastAnswerCorrect">
+          <div class="correct-answer">
             <strong>Correct answer:</strong> {{ currentQuestion.correctAnswer }}
           </div>
 
@@ -409,7 +409,7 @@ const selectChoice = (choice: string) => {
   if (showAnswerFeedback.value) return
   
   selectedChoice.value = choice
-  const isCorrect = choice === currentQuestion.value.correctAnswer
+  const isCorrect = checkAnswer(choice, currentQuestion.value.correctAnswer)
   processAnswer(isCorrect)
 }
 
