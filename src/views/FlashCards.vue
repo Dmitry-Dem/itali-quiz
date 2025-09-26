@@ -152,15 +152,23 @@ const sessionStats = ref({
   hard: 0
 })
 
-const words = computed(() => {
-  if (isAllWords.value) {
-    return allWords.value
-      .filter(word => word.learned !== true)
-      .sort((a, b) => (b.wrongAttempts || 0) - (a.wrongAttempts || 0))
+const shuffleArray = (array: any[]) => {
+  const shuffled = [...array]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
   }
-  return allWords.value
-    .filter(word => word.groupId === groupId.value && word.learned !== true)
-    .sort((a, b) => (b.wrongAttempts || 0) - (a.wrongAttempts || 0))
+  return shuffled
+}
+
+const words = computed(() => {
+  let filteredWords
+  if (isAllWords.value) {
+    filteredWords = allWords.value.filter(word => word.learned !== true)
+  } else {
+    filteredWords = allWords.value.filter(word => word.groupId === groupId.value && word.learned !== true)
+  }
+  return shuffleArray(filteredWords)
 })
 
 const visibleWords = computed(() => {
