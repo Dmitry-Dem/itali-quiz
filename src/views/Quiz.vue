@@ -411,7 +411,44 @@ const selectChoice = (choice: string) => {
 }
 
 const checkAnswer = (userAnswer: string, correctAnswer: string) => {
-  return userAnswer.toLowerCase().trim() === correctAnswer.toLowerCase().trim()
+  const userInput = userAnswer.toLowerCase().trim()
+  const fullAnswer = correctAnswer.toLowerCase().trim()
+  
+  if (userInput === fullAnswer) return true
+  
+  if (fullAnswer.includes(',')) {
+    const options = fullAnswer.split(',').map(opt => opt.trim())
+    if (options.includes(userInput)) return true
+    
+    for (const option of options) {
+      if (isSignificantMatch(userInput, option)) return true
+    }
+  }
+  
+  return isSignificantMatch(userInput, fullAnswer)
+}
+
+const isSignificantMatch = (userInput: string, correctOption: string) => {
+  if (userInput.length < 3) return false
+  
+  const userWords = userInput.split(' ').filter(w => w.length > 0)
+  const correctWords = correctOption.split(' ').filter(w => w.length > 0)
+  
+  if (correctOption.includes(userInput)) {
+    if (correctWords.length > 1) {
+      return userInput.length >= 4 || userWords.length > 1
+    }
+    return userInput.length >= correctOption.length * 0.4
+  }
+  
+  if (userWords.length > 1) {
+    const allWordsPresent = userWords.every(word => 
+      correctWords.some(correctWord => correctWord.includes(word) || word.includes(correctWord))
+    )
+    return allWordsPresent
+  }
+  
+  return false
 }
 
 const processAnswer = (isCorrect: boolean) => {

@@ -141,11 +141,7 @@ CMD ["npm", "run", "preview"]
 We follow a structured commit message format to maintain clear project history:
 
 ```
-type(scope): short description
-
-[optional body]
-
-[optional footer]
+type(scope): SHORT clear description
 ```
 
 #### Types
