@@ -1,50 +1,106 @@
-[
-  {
-    "id": "default-group",
-    "name": "General",
-    "description": "General vocabulary words",
-    "color": "#3b82f6",
-    "icon": "📚",
-    "createdAt": "2024-01-01T00:00:00.000Z"
-  },
-  {
-    "id": "food-group",
-    "name": "Food & Dining",
-    "description": "Food, drinks, and restaurant vocabulary",
-    "color": "#ef4444",
-    "icon": "🍝",
-    "createdAt": "2024-01-01T00:00:00.000Z"
-  },
-  {
-    "id": "travel-group",
-    "name": "Travel",
-    "description": "Transportation, directions, and travel terms",
-    "color": "#10b981",
-    "icon": "✈️",
-    "createdAt": "2024-01-01T00:00:00.000Z"
-  },
-  {
-    "id": "family-group",
-    "name": "Family & People",
-    "description": "Family members, relationships, and people",
-    "color": "#f59e0b",
-    "icon": "👨‍👩‍👧‍👦",
-    "createdAt": "2024-01-01T00:00:00.000Z"
-  },
-  {
-    "id": "greetings-group",
-    "name": "Greetings",
-    "description": "Common greetings and polite expressions",
-    "color": "#8b5cf6",
-    "icon": "👋",
-    "createdAt": "2024-01-01T00:00:00.000Z"
-  },
-  {
-    "id": "top1k-group",
-    "name": "Italiano Top 1K",
-    "description": "The 1000 most common Italian words",
-    "color": "#ec4899",
-    "icon": "🇮🇹",
-    "createdAt": "2024-01-01T00:00:00.000Z"
-  }
+﻿[
+    {
+        "id":  "top1k-group",
+        "name":  "Italiano Top 1K",
+        "description":  "The 1250 most common Italian words",
+        "color":  "#ec4899",
+        "icon":  "🔝",
+        "createdAt":  "2024-01-01T00:00:00.000Z"
+    },
+    {
+        "id":  "group-1758794957933-yu3i4hcsr",
+        "name":  "Book - section 1",
+        "description":  "",
+        "icon":  "📚",
+        "color":  "#8b5cf6",
+        "createdAt":  "2025-09-25T10:09:17.933Z"
+    },
+    {
+        "id":  "group-1758827924183-a2qnqqwjh",
+        "name":  "Book - section 2",
+        "description":  "",
+        "icon":  "📚",
+        "color":  "#3b82f6",
+        "createdAt":  "2025-09-25T19:18:44.183Z"
+    },
+    {
+        "id":  "group-1758973861711-63j1ih1rf",
+        "name":  "Book - section 3",
+        "description":  "",
+        "icon":  "📚",
+        "color":  "#ef4444",
+        "createdAt":  "2025-09-27T11:51:01.711Z"
+    },
+    {
+        "id":  "group-1758993449384-pnna8rzry",
+        "name":  "Book - section 4",
+        "description":  "",
+        "icon":  "📚",
+        "color":  "#10b981",
+        "createdAt":  "2025-09-27T17:17:29.384Z"
+    },
+    {
+        "id":  "group-1759172934049-fw1msl26b",
+        "name":  "Communication set",
+        "description":  "Needed for talking with GPT",
+        "icon":  "💬",
+        "color":  "#84cc16",
+        "createdAt":  "2025-09-29T19:08:54.049Z"
+    },
+    {
+        "id":  "group-1759174426291-6lxx2bxw9",
+        "name":  "Quick testing words",
+        "description":  "",
+        "icon":  "⚡",
+        "color":  "#f59e0b",
+        "createdAt":  "2025-09-29T19:33:46.291Z"
+    },
+    {
+        "id":  "group-1759572673203-7uslqmjab",
+        "name":  "Book - section 4",
+        "description":  "",
+        "icon":  "📚",
+        "color":  "#f97316",
+        "createdAt":  "2025-10-04T10:11:13.203Z"
+    },
+    {
+        "id":  "group-1759685219673-8w5c9tsvo",
+        "name":  "Annoying shit",
+        "description":  "",
+        "icon":  "💀",
+        "color":  "#ef4444",
+        "createdAt":  "2025-10-05T17:26:59.673Z"
+    },
+    {
+        "id":  "group-1759755838121-vkqtkwgus",
+        "name":  "Book - Supermarket section 1",
+        "description":  "",
+        "icon":  "🛒",
+        "color":  "#10b981",
+        "createdAt":  "2025-10-06T13:03:58.122Z"
+    },
+    {
+        "id":  "group-1759775573281-9a3hysik2",
+        "name":  "Book - supermarket section 2",
+        "description":  "",
+        "icon":  "🛒",
+        "color":  "#10b981",
+        "createdAt":  "2025-10-06T18:32:53.281Z"
+    },
+    {
+        "id":  "group-1760127749214-nmbhfl7e2",
+        "name":  "Book - super meal section 1",
+        "description":  "",
+        "icon":  "🍽️",
+        "color":  "#f97316",
+        "createdAt":  "2025-10-10T20:22:29.214Z"
+    },
+    {
+        "id":  "group-1760190565278-huiarl2by",
+        "name":  "Book - super meal section 2",
+        "description":  "",
+        "icon":  "🍽️",
+        "color":  "#f97316",
+        "createdAt":  "2025-10-11T13:49:25.278Z"
+    }
 ]
