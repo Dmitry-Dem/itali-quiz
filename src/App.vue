@@ -14,20 +14,14 @@
           </div>
           
           <div class="mobile-nav-controls">
-            <button @click="toggleTheme" class="btn btn-icon btn-secondary">
-              <span v-if="theme === 'light'">🌙</span>
-              <span v-else>☀️</span>
-            </button>
+            <ThemeSelector class="mobile-theme" />
             <button @click="showMobileMenu = !showMobileMenu" class="btn btn-icon btn-secondary mobile-menu-toggle">
               <span v-if="!showMobileMenu">☰</span>
               <span v-else>✕</span>
             </button>
           </div>
           
-          <button @click="toggleTheme" class="btn btn-icon btn-secondary desktop-theme-toggle">
-            <span v-if="theme === 'light'">🌙</span>
-            <span v-else>☀️</span>
-          </button>
+          <ThemeSelector class="desktop-theme" />
         </div>
         
         <div class="mobile-nav" :class="{ 'mobile-nav-open': showMobileMenu }">
@@ -66,13 +60,10 @@
 <script setup lang="ts">
 import { useAppStore } from './composables/useAppStore'
 import { watch, onMounted, ref } from 'vue'
+import ThemeSelector from './components/ThemeSelector.vue'
 
-const { theme, setTheme } = useAppStore()
+const { theme } = useAppStore()
 const showMobileMenu = ref(false)
-
-const toggleTheme = () => {
-  setTheme(theme.value === 'light' ? 'dark' : 'light')
-}
 
 const refreshPage = () => {
   window.location.reload()
@@ -256,6 +247,24 @@ onMounted(() => {
   
   .logo h2 {
     font-size: 1.25rem;
+  }
+  
+  .desktop-theme {
+    display: none;
+  }
+  
+  .mobile-theme {
+    display: block;
+  }
+}
+
+@media (min-width: 768px) {
+  .desktop-theme {
+    display: block;
+  }
+  
+  .mobile-theme {
+    display: none;
   }
 }
 </style>

@@ -3,21 +3,23 @@ import { dataService, type Word, type AppSettings, type WordGroup } from '../ser
 
 export { type Word, type AppSettings, type WordGroup } from '../services/dataService'
 
+// Create singleton store instance
+const words = ref<Word[]>([])
+const wordGroups = ref<WordGroup[]>([])
+const settings = ref<AppSettings>({
+  theme: 'dark',
+  language: 'en',
+  notifications: true,
+  autoBackup: true,
+  lastBackup: null
+})
+
+const isLoading = ref(true)
+const error = ref<string | null>(null)
+
+const theme = computed(() => settings.value.theme)
+
 export const useAppStore = () => {
-  const words = ref<Word[]>([])
-  const wordGroups = ref<WordGroup[]>([])
-  const settings = ref<AppSettings>({
-    theme: 'dark',
-    language: 'en',
-    notifications: true,
-    autoBackup: true,
-    lastBackup: null
-  })
-  
-  const isLoading = ref(true)
-  const error = ref<string | null>(null)
-  
-  const theme = computed(() => settings.value.theme)
   
   const loadData = async () => {
     try {
@@ -41,7 +43,7 @@ export const useAppStore = () => {
     }
   }
   
-  const setTheme = (newTheme: 'light' | 'dark') => {
+  const setTheme = (newTheme: 'light' | 'dark' | 'ocean' | 'forest' | 'sunset' | 'purple' | 'rose' | 'midnight' | 'cream') => {
     settings.value.theme = newTheme
     dataService.saveSettings(settings.value)
   }
@@ -205,6 +207,11 @@ export const useAppStore = () => {
   }
 
   const exportData = () => {
+    // Ensure dataService has the most current data
+    dataService.saveWords(words.value)
+    dataService.saveSettings(settings.value)
+    dataService.saveWordGroups(wordGroups.value)
+    
     const data = dataService.exportData()
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)

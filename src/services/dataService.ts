@@ -1,5 +1,5 @@
 export interface AppSettings {
-  theme: 'light' | 'dark'
+  theme: 'light' | 'dark' | 'ocean' | 'forest' | 'sunset' | 'purple' | 'rose' | 'midnight' | 'cream'
   language: string
   notifications: boolean
   autoBackup: boolean
@@ -138,8 +138,10 @@ class DataService {
     return this.loadSettings()
   }
 
-  exportData(): { words: Word[], settings: AppSettings } {
+  exportData(): { version: string, words: Word[], settings: AppSettings, wordGroups: WordGroup[], exportDate: string } {
     return {
+      version: '1.0',
+      exportDate: new Date().toISOString(),
       words: this.wordsCache || [],
       settings: this.settingsCache || {
         theme: 'dark',
@@ -147,16 +149,24 @@ class DataService {
         notifications: true,
         autoBackup: true,
         lastBackup: null
-      }
+      },
+      wordGroups: this.groupsCache || []
     }
   }
 
-  importData(data: { words?: Word[], settings?: AppSettings }): void {
+  importData(data: { words?: Word[], settings?: AppSettings, wordGroups?: WordGroup[], version?: string }): void {
+    if (data.version && data.version !== '1.0') {
+      console.warn(`Importing data from version ${data.version}, current version is 1.0`)
+    }
+    
     if (data.words) {
       this.saveWords(data.words)
     }
     if (data.settings) {
       this.saveSettings(data.settings)
+    }
+    if (data.wordGroups) {
+      this.saveWordGroups(data.wordGroups)
     }
   }
 
