@@ -97,7 +97,7 @@
         
         <div class="groups-grid">
           <router-link 
-            v-for="group in wordGroups.slice(0, 4)" 
+            v-for="group in sortedGroups.slice(0, 4)" 
             :key="group.id"
             :to="`/words/${group.id}`"
             class="group-card"
@@ -280,6 +280,11 @@ const recentWords = computed(() => {
   return [...words.value]
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 6)
+})
+
+const sortedGroups = computed(() => {
+  return [...wordGroups.value]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 })
 
 const learnedWordsCount = computed(() => {

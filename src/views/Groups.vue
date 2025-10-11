@@ -3,6 +3,17 @@
     <div class="header">
       <h2>Word Categories</h2>
       <div class="header-actions">
+        <div class="sort-section">
+          <label for="sort-select" class="sort-label">Sort by:</label>
+          <select id="sort-select" v-model="sortBy" class="sort-select">
+            <option value="recent">Most Recent</option>
+            <option value="oldest">Oldest First</option>
+            <option value="name">Name (A-Z)</option>
+            <option value="name-desc">Name (Z-A)</option>
+            <option value="word-count">Most Words</option>
+            <option value="word-count-asc">Fewest Words</option>
+          </select>
+        </div>
         <button 
           @click="goToFlashCards('all')" 
           class="btn btn-flashcard-all"
@@ -25,7 +36,7 @@
 
     <div v-else class="groups-grid">
       <div 
-        v-for="group in wordGroups" 
+        v-for="group in sortedGroups" 
         :key="group.id"
         class="group-card"
         :style="{ borderColor: group.color }"
@@ -67,7 +78,7 @@
       </div>
     </div>
 
-    <div v-if="!isLoading && wordGroups.length === 0" class="empty-state">
+    <div v-if="!isLoading && sortedGroups.length === 0" class="empty-state">
       <div class="empty-icon">📚</div>
       <h3>No categories yet</h3>
       <p>Create your first word category to get started!</p>
@@ -168,7 +179,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppStore, type WordGroup } from '../composables/useAppStore'
 
@@ -177,6 +188,28 @@ const { words, wordGroups, isLoading, loadData, addWordGroup, updateWordGroup, d
 
 const showAddGroupModal = ref(false)
 const editingGroup = ref<WordGroup | null>(null)
+const sortBy = ref<'recent' | 'oldest' | 'name' | 'name-desc' | 'word-count' | 'word-count-asc'>('recent')
+
+const sortedGroups = computed(() => {
+  const groups = [...wordGroups.value]
+  
+  switch (sortBy.value) {
+    case 'recent':
+      return groups.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    case 'oldest':
+      return groups.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+    case 'name':
+      return groups.sort((a, b) => a.name.localeCompare(b.name))
+    case 'name-desc':
+      return groups.sort((a, b) => b.name.localeCompare(a.name))
+    case 'word-count':
+      return groups.sort((a, b) => getGroupWordCount(b.id) - getGroupWordCount(a.id))
+    case 'word-count-asc':
+      return groups.sort((a, b) => getGroupWordCount(a.id) - getGroupWordCount(b.id))
+    default:
+      return groups
+  }
+})
 
 const groupForm = ref({
   name: '',
@@ -296,32 +329,75 @@ const closeModal = () => {
   display: flex;
   gap: 1rem;
   align-items: center;
+  flex-wrap: wrap;
+}
+
+.sort-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sort-label {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.sort-select {
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 160px;
+  box-shadow: var(--shadow-sm);
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1rem;
+}
+
+.sort-select:focus {
+  outline: none;
+  border-color: var(--border-color-focus);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
+}
+
+.sort-select:hover {
+  border-color: var(--border-color-focus);
 }
 
 .btn {
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 12px;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  height: 48px;
+  box-sizing: border-box;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary-color), #4f46e5);
-  color: white;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  background: var(--bg-accent);
+  color: var(--text-accent);
   border: none;
   font-weight: 600;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, var(--primary-hover), #4338ca);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  background: var(--bg-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .add-category-btn {
@@ -349,6 +425,10 @@ const closeModal = () => {
 .btn-icon {
   font-size: 1.1rem;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .btn-text {
@@ -484,22 +564,23 @@ const closeModal = () => {
 }
 
 .btn-flashcard-all {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--gradient-primary);
+  color: var(--text-accent);
   font-weight: 600;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 .btn-flashcard-all:hover:not(:disabled) {
-  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  background: var(--gradient-accent);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-flashcard-all:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
 }
 
 .empty-state {

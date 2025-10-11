@@ -81,6 +81,17 @@
           Easy
         </button>
       </div>
+
+      <div class="secondary-actions">
+        <button @click="markAsLearned" class="btn btn-learned" title="Mark as learned">
+          <i class="icon">✅</i>
+          Learned
+        </button>
+        <button @click="deleteWord" class="btn btn-delete" title="Delete word">
+          <i class="icon">🗑️</i>
+          Delete
+        </button>
+      </div>
     </div>
 
     <div v-else class="empty-state">
@@ -130,7 +141,7 @@ import { useAppStore } from '../composables/useAppStore'
 
 const route = useRoute()
 const router = useRouter()
-const { wordGroups, words: allWords, updateWordStats } = useAppStore()
+const { wordGroups, words: allWords, updateWordStats, toggleWordLearned, removeWord } = useAppStore()
 
 const groupId = ref(route.params.groupId as string)
 const isAllWords = computed(() => groupId.value === 'all')
@@ -236,6 +247,32 @@ const markHard = () => {
       swipeDirection.value = null
       nextCard()
     }, 300)
+  }
+}
+
+const markAsLearned = () => {
+  const currentWord = words.value[currentIndex.value]
+  if (currentWord) {
+    toggleWordLearned(currentWord.id)
+    nextCard()
+  }
+}
+
+const deleteWord = () => {
+  const currentWord = words.value[currentIndex.value]
+  if (currentWord) {
+    removeWord(currentWord.id)
+    refreshWords()
+    
+    // If we deleted the last word, go to previous
+    if (currentIndex.value >= words.value.length && words.value.length > 0) {
+      currentIndex.value = words.value.length - 1
+    }
+    
+    // If no words left, show completion modal
+    if (words.value.length === 0) {
+      showCompleteModal.value = true
+    }
   }
 }
 
@@ -709,6 +746,51 @@ onUnmounted(() => {
     transform: translateX(-100vw) rotate(-30deg);
     opacity: 0;
   }
+}
+
+.secondary-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  justify-content: center;
+}
+
+.btn-learned {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 80px;
+}
+
+.btn-learned:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-delete {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 80px;
+}
+
+.btn-delete:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 @media (max-width: 768px) {

@@ -46,8 +46,24 @@
       </div>
     </div>
 
+    <SearchFilter 
+      v-model="searchQuery"
+      v-model:learnedFilter="learnedFilter"
+      placeholder="Search words in this category..."
+      :showLearnedFilter="true"
+    />
+
     <div v-if="isLoading" class="loading">
       Loading words...
+    </div>
+
+    <div v-else-if="filteredWords.length === 0 && searchQuery" class="empty-state">
+      <div class="empty-icon">🔍</div>
+      <h3>No words found</h3>
+      <p>Try searching with different keywords</p>
+      <button @click="searchQuery = ''" class="btn btn-secondary">
+        Clear Search
+      </button>
     </div>
 
     <div v-else-if="filteredWords.length === 0" class="empty-state">
@@ -287,6 +303,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAppStore, type Word } from '../composables/useAppStore'
 import BulkImport from '../components/BulkImport.vue'
+import SearchFilter from '../components/SearchFilter.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -298,6 +315,8 @@ const showAddWordModal = ref(false)
 const showEditGroupModal = ref(false)
 const showBulkImportModal = ref(false)
 const editingWord = ref<Word | null>(null)
+const searchQuery = ref('')
+const learnedFilter = ref<'all' | 'learned' | 'unlearned'>('all')
 
 const wordForm = ref({
   italian: '',
@@ -322,7 +341,26 @@ const currentGroup = computed(() => {
 })
 
 const filteredWords = computed(() => {
-  return words.value.filter(word => word.groupId === groupId.value)
+  // First filter by group
+  let groupWords = words.value.filter(word => word.groupId === groupId.value)
+  
+  // Then apply search if there's a query
+  if (searchQuery.value.trim()) {
+    const lowercaseQuery = searchQuery.value.toLowerCase()
+    groupWords = groupWords.filter(word => 
+      word.italian.toLowerCase().includes(lowercaseQuery) ||
+      word.english.toLowerCase().includes(lowercaseQuery)
+    )
+  }
+  
+  // Finally apply learned filter
+  if (learnedFilter.value === 'learned') {
+    groupWords = groupWords.filter(word => word.learned)
+  } else if (learnedFilter.value === 'unlearned') {
+    groupWords = groupWords.filter(word => !word.learned)
+  }
+  
+  return groupWords
 })
 
 onMounted(() => {
@@ -515,7 +553,7 @@ const handleBulkImport = (data: { words: Array<{ italian: string; english: strin
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   padding: 1rem;
   background: var(--bg-secondary);
   border-radius: 0.75rem;

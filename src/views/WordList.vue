@@ -15,34 +15,13 @@
         </div>
       </div>
 
-      <div class="search-section animate-slide-up">
-        <div class="search-container">
-          <div class="search-input-wrapper">
-            <span class="search-icon">🔍</span>
-            <input 
-              v-model="searchQuery"
-              type="text" 
-              class="search-input"
-              placeholder="Search Italian or English words..."
-            >
-            <button 
-              v-if="searchQuery"
-              @click="searchQuery = ''"
-              class="clear-search"
-            >
-              ✕
-            </button>
-          </div>
-          
-          <div class="filter-wrapper">
-            <select v-model="learnedFilter" class="learned-filter">
-              <option value="all">All Words</option>
-              <option value="learned">Learned Only</option>
-              <option value="unlearned">Not Learned</option>
-            </select>
-          </div>
-        </div>
-      </div>
+      <SearchFilter 
+        v-model="searchQuery"
+        v-model:learnedFilter="learnedFilter"
+        placeholder="Search Italian or English words..."
+        :showLearnedFilter="true"
+        :animate="true"
+      />
 
       <div class="words-section animate-fade-in">
         <div v-if="filteredWords.length === 0 && searchQuery" class="no-results">
@@ -236,6 +215,7 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue'
 import { useAppStore, type Word } from '../composables/useAppStore'
+import SearchFilter from '../components/SearchFilter.vue'
 
 const { words, wordGroups, addWord, removeWord, updateWord, searchWords, toggleWordLearned } = useAppStore()
 
@@ -379,83 +359,6 @@ nextTick(() => {
 .page-subtitle {
   color: var(--text-secondary);
   font-size: 1.1rem;
-}
-
-.search-section {
-  margin-bottom: 2rem;
-}
-
-.search-container {
-  max-width: 800px;
-  margin: 0 auto;
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-.search-input-wrapper {
-  position: relative;
-  flex: 1;
-}
-
-.filter-wrapper {
-  min-width: 150px;
-}
-
-.learned-filter {
-  width: 100%;
-  padding: 1rem;
-  border: 2px solid var(--border-color);
-  border-radius: 12px;
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.learned-filter:focus {
-  outline: none;
-  border-color: var(--border-color-focus);
-  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
-}
-
-.search-icon {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 1.1rem;
-}
-
-.search-input {
-  width: 100%;
-  padding: 1rem 1rem 1rem 3rem;
-  border: 2px solid var(--border-color);
-  border-radius: 12px;
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
-  font-size: 1rem;
-  transition: all 0.3s ease;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: var(--border-color-focus);
-  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
-}
-
-.clear-search {
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  cursor: pointer;
-  font-size: 1.1rem;
-  padding: 0.25rem;
 }
 
 .words-grid {
@@ -769,15 +672,6 @@ nextTick(() => {
   
   .header-actions .btn {
     width: 100%;
-  }
-  
-  .search-container {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-  
-  .filter-wrapper {
-    min-width: auto;
   }
   
   .word-display {
