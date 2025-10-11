@@ -35,6 +35,10 @@
           <span class="icon">➕</span>
           Add Word
         </button>
+        <button @click="showBulkImportModal = true" class="btn btn-primary">
+          <span class="icon">📥</span>
+          Bulk Import
+        </button>
         <button @click="showEditGroupModal = true" class="btn btn-secondary">
           <span class="icon">✏️</span>
           Edit Category
@@ -268,6 +272,13 @@
         </form>
       </div>
     </div>
+
+    <BulkImport
+      :is-open="showBulkImportModal"
+      :category-name="currentGroup?.name"
+      @close="showBulkImportModal = false"
+      @import="handleBulkImport"
+    />
   </div>
 </template>
 
@@ -275,6 +286,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAppStore, type Word } from '../composables/useAppStore'
+import BulkImport from '../components/BulkImport.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -284,6 +296,7 @@ const groupId = computed(() => route.params.groupId as string)
 
 const showAddWordModal = ref(false)
 const showEditGroupModal = ref(false)
+const showBulkImportModal = ref(false)
 const editingWord = ref<Word | null>(null)
 
 const wordForm = ref({
@@ -422,6 +435,21 @@ const closeWordModal = () => {
 const closeGroupModal = () => {
   showEditGroupModal.value = false
 }
+
+const handleBulkImport = (data: { words: Array<{ italian: string; english: string; details?: string }> }) => {
+  data.words.forEach(word => {
+    addWord(
+      word.italian,
+      word.english,
+      groupId.value,
+      undefined,
+      word.details,
+      undefined
+    )
+  })
+  
+  alert(`Successfully imported ${data.words.length} word(s) to ${currentGroup.value?.name}`)
+}
 </script>
 
 <style scoped>
@@ -501,6 +529,7 @@ const closeGroupModal = () => {
 .actions {
   display: flex;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .btn {
@@ -901,7 +930,18 @@ const closeGroupModal = () => {
   }
   
   .actions {
-    justify-content: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .btn {
+    font-size: 0.9rem;
+    padding: 1rem 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   
   .word-card {
@@ -922,6 +962,32 @@ const closeGroupModal = () => {
   
   .modal-actions {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  
+  .btn {
+    padding: 0.875rem 0.5rem;
+    font-size: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: 60px;
+  }
+  
+  .btn .icon {
+    font-size: 1.2rem;
+  }
+  
+  .actions-bar {
+    gap: 0.75rem;
   }
 }
 </style>

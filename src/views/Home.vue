@@ -218,87 +218,13 @@
       </div>
     </div>
 
-    <div v-if="showBulkImportModal" class="modal-overlay" @click="closeBulkImportModal">
-      <div class="modal bulk-import-modal" @click.stop>
-        <div class="modal-header">
-          <h3>Bulk Import Words</h3>
-          <button @click="closeBulkImportModal" class="close-btn">×</button>
-        </div>
-        
-        <div class="bulk-import-content">
-          <div class="instructions">
-            <h4>Import Format</h4>
-            <p>Enter your words separated by commas:</p>
-            <code>[italian][english][description], [italian][english][description], ...</code>
-            <p class="example">Example:<br>
-              [ciao][hello][greeting], [grazie][thank you][expression of gratitude], [casa][house][building where people live]
-            </p>
-          </div>
-          
-          <div class="form-group">
-            <label>Group</label>
-            <select v-model="bulkImport.groupId" required>
-              <option value="">Select a group...</option>
-              <option v-for="group in wordGroups" :key="group.id" :value="group.id">
-                {{ group.name }}
-              </option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label>Difficulty (Optional)</label>
-            <select v-model="bulkImport.difficulty">
-              <option value="">Select difficulty...</option>
-              <option value="beginner">Beginner</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label>Words to Import</label>
-            <textarea 
-              v-model="bulkImport.text" 
-              placeholder="Enter words separated by commas: [italian][english][description], [italian][english][description], ..."
-              rows="10"
-              class="bulk-text-area"
-            ></textarea>
-          </div>
-          
-          <div v-if="bulkImport.preview.length > 0" class="preview-section">
-            <h4>Preview ({{ bulkImport.preview.length }} words)</h4>
-            <div class="preview-list">
-              <div v-for="(word, index) in bulkImport.preview.slice(0, 5)" :key="index" class="preview-item">
-                <span class="italian">{{ word.italian }}</span>
-                <span class="separator">→</span>
-                <span class="english">{{ word.english }}</span>
-                <span v-if="word.details" class="details">({{ word.details }})</span>
-              </div>
-              <div v-if="bulkImport.preview.length > 5" class="more-items">
-                ... and {{ bulkImport.preview.length - 5 }} more words
-              </div>
-            </div>
-          </div>
-          
-          <div class="form-actions">
-            <button type="button" @click="parseBulkText" class="btn btn-secondary">
-              🔍 Preview Words
-            </button>
-            <button type="button" @click="closeBulkImportModal" class="btn btn-secondary">
-              Cancel
-            </button>
-            <button 
-              type="button" 
-              @click="importBulkWords" 
-              class="btn btn-primary"
-              :disabled="bulkImport.preview.length === 0"
-            >
-              Import {{ bulkImport.preview.length }} Words
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <BulkImport
+      :is-open="showBulkImportModal"
+      :show-group-select="true"
+      :groups="wordGroups"
+      @close="showBulkImportModal = false"
+      @import="handleBulkImport"
+    />
 
     <div v-if="showConfirmModal" class="modal-overlay">
       <div class="modal confirm-modal">
@@ -324,6 +250,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { useAppStore } from '../composables/useAppStore'
+import BulkImport from '../components/BulkImport.vue'
 
 const { words, wordGroups, addWord, removeWord, exportData, importData } = useAppStore()
 
@@ -338,17 +265,6 @@ const newWord = ref({
   groupId: '',
   difficulty: '',
   details: ''
-})
-
-const bulkImport = ref({
-  text: '',
-  groupId: '',
-  difficulty: '',
-  preview: [] as Array<{
-    italian: string
-    english: string
-    details?: string
-  }>
 })
 
 const confirmModal = ref({
@@ -449,70 +365,24 @@ const cancelConfirm = () => {
   }
 }
 
-const closeBulkImportModal = () => {
-  showBulkImportModal.value = false
-  bulkImport.value = {
-    text: '',
-    groupId: '',
-    difficulty: '',
-    preview: []
-  }
-}
-
-const parseBulkText = () => {
-  const text = bulkImport.value.text.trim()
-  if (!text) {
-    bulkImport.value.preview = []
-    return
-  }
-  
-  const parsed: Array<{ italian: string; english: string; details?: string }> = []
-  const regex = /\[([^\]]+)\]\[([^\]]+)\](?:\[([^\]]*)\])?/g
-  
-  let match
-  while ((match = regex.exec(text)) !== null) {
-    const italian = match[1].trim()
-    const english = match[2].trim()
-    const details = match[3] ? match[3].trim() : undefined
-    
-    if (italian && english) {
-      parsed.push({ 
-        italian, 
-        english, 
-        details: details || undefined 
-      })
-    }
-  }
-  
-  bulkImport.value.preview = parsed
-}
-
-const importBulkWords = async () => {
-  if (!bulkImport.value.groupId) {
-    alert('Please select a group for the words')
-    return
-  }
-  
-  if (bulkImport.value.preview.length === 0) {
-    alert('No valid words to import. Please check the format.')
+const handleBulkImport = async (data: { words: Array<{ italian: string; english: string; details?: string }>, groupId?: string }) => {
+  if (!data.groupId) {
+    alert('Please select a category')
     return
   }
   
   try {
-    const difficulty = bulkImport.value.difficulty as 'beginner' | 'intermediate' | 'advanced' | ''
-    
-    for (const word of bulkImport.value.preview) {
+    for (const word of data.words) {
       await addWord(
         word.italian,
         word.english,
-        bulkImport.value.groupId,
-        difficulty || undefined,
+        data.groupId,
+        undefined,
         word.details
       )
     }
     
-    alert(`Successfully imported ${bulkImport.value.preview.length} words!`)
-    closeBulkImportModal()
+    alert(`Successfully imported ${data.words.length} words!`)
   } catch (error) {
     console.error('Error importing words:', error)
     alert('Error importing words. Please try again.')
