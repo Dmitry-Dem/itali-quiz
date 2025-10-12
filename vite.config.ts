@@ -5,7 +5,11 @@ import { VitePWA } from 'vite-plugin-pwa'
 export default defineConfig(() => ({
   base: '/',
   plugins: [
-    vue(),
+    vue({
+      script: {
+        defineModel: true
+      }
+    }),
     VitePWA({
       registerType: 'autoUpdate',
       workbox: {
