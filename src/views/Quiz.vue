@@ -204,44 +204,14 @@
       </div>
     </div>
 
-    <div v-if="showResults" class="quiz-results">
-      <header class="quiz-header">
-        <h1>🎉 Quiz Complete!</h1>
-      </header>
-
-      <div class="results-content">
-        <div class="score-display">
-          <div class="score-circle">
-            <div class="score-percentage">{{ Math.round(scorePercentage) }}%</div>
-            <div class="score-fraction">{{ correctAnswers }} / {{ quizWords.length }}</div>
-          </div>
-        </div>
-
-        <div class="results-stats">
-          <div class="stat">
-            <div class="stat-value">{{ correctAnswers }}</div>
-            <div class="stat-label">Correct</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">{{ incorrectAnswers }}</div>
-            <div class="stat-label">Incorrect</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">{{ quizWords.length }}</div>
-            <div class="stat-label">Total</div>
-          </div>
-        </div>
-
-        <div class="results-actions">
-          <button @click="restartQuiz" class="btn btn-primary">
-            🔄 Try Again
-          </button>
-          <button @click="goBack" class="btn btn-secondary">
-            📚 Back to Home
-          </button>
-        </div>
-      </div>
-    </div>
+    <SessionStatsModal
+      v-if="showResults"
+      :correct-answers="correctAnswers"
+      :incorrect-answers="incorrectAnswers"
+      :total-questions="quizWords.length"
+      @close="goBack"
+      @restart="restartQuiz"
+    />
   </div>
 </template>
 
@@ -249,6 +219,7 @@
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '../composables/useAppStore'
+import SessionStatsModal from '../components/SessionStatsModal.vue'
 
 const router = useRouter()
 const { wordGroups, words: allWords, updateWordStats } = useAppStore()
@@ -301,11 +272,6 @@ const currentQuestion = computed(() => {
 const progressPercentage = computed(() => {
   if (!quizWords.value.length) return 0
   return (currentQuestionIndex.value / quizWords.value.length) * 100
-})
-
-const scorePercentage = computed(() => {
-  if (!quizWords.value.length) return 0
-  return (correctAnswers.value / quizWords.value.length) * 100
 })
 
 const goBack = () => {

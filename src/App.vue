@@ -102,30 +102,49 @@ onMounted(() => {
   -webkit-backdrop-filter: blur(10px);
 }
 
-.logo {
-  text-decoration: none;
-  color: var(--text-primary);
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  width: 100%;
 }
 
 .nav-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
+  gap: 2rem;
+}
+
+.logo {
+  text-decoration: none;
+  color: var(--text-primary);
+  flex-shrink: 0;
 }
 
 .nav-links {
   display: flex;
-  gap: 2rem;
+  gap: 3rem;
   align-items: center;
+  flex-shrink: 0;
+  flex: 1;
+  justify-content: center;
+}
+
+.desktop-nav {
+  display: flex;
 }
 
 .nav-link {
   text-decoration: none;
   color: var(--text-secondary);
   font-weight: 500;
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   transition: all 0.2s;
+  font-size: 1rem;
+  white-space: nowrap;
 }
 
 .nav-link:hover {
@@ -148,7 +167,11 @@ onMounted(() => {
   font-size: 1.25rem;
 }
 
-.desktop-theme-toggle {
+.desktop-nav {
+  display: flex;
+}
+
+.desktop-theme {
   display: block;
 }
 
@@ -258,7 +281,19 @@ onMounted(() => {
   }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 769px) {
+  .desktop-nav {
+    display: flex;
+  }
+  
+  .mobile-nav-controls {
+    display: none;
+  }
+  
+  .mobile-nav {
+    display: none;
+  }
+  
   .desktop-theme {
     display: block;
   }

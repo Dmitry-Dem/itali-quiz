@@ -68,21 +68,30 @@
       </div>
 
       <div class="action-buttons">
-        <button @click="markHard" class="btn btn-hard">
-          <i class="icon">👎</i>
-          Hard
-        </button>
-        <button @click="flipCard" class="btn btn-flip">
-          <i class="icon">🔄</i>
-          Flip
-        </button>
-        <button @click="markEasy" class="btn btn-easy">
-          <i class="icon">👍</i>
-          Easy
-        </button>
+        <div class="button-row primary-actions">
+          <button @click="markEasy" class="btn btn-easy">
+            <i class="icon">👍</i>
+            Easy
+          </button>
+          <button @click="markHard" class="btn btn-hard">
+            <i class="icon">👎</i>
+            Hard
+          </button>
+        </div>
+        
+        <div class="button-row secondary-actions">
+          <button @click="previousCard" class="btn btn-prev" :disabled="currentIndex === 0">
+            <i class="icon">←</i>
+            Previous
+          </button>
+          <button @click="flipCard" class="btn btn-flip">
+            <i class="icon">�</i>
+            Flip
+          </button>
+        </div>
       </div>
 
-      <div class="secondary-actions">
+      <div class="tertiary-actions">
         <button @click="markAsLearned" class="btn btn-learned" title="Mark as learned">
           <i class="icon">✅</i>
           Learned
@@ -103,34 +112,14 @@
       </router-link>
     </div>
 
-    <div v-if="showCompleteModal" class="modal-overlay" @click="closeCompleteModal">
-      <div class="modal" @click.stop>
-        <div class="modal-header">
-          <h3>🎉 Session Complete!</h3>
-        </div>
-        <div class="modal-body">
-          <div class="stats">
-            <div class="stat">
-              <div class="stat-value">{{ sessionStats.total }}</div>
-              <div class="stat-label">Total Cards</div>
-            </div>
-            <div class="stat">
-              <div class="stat-value">{{ sessionStats.easy }}</div>
-              <div class="stat-label">Easy</div>
-            </div>
-            <div class="stat">
-              <div class="stat-value">{{ sessionStats.hard }}</div>
-              <div class="stat-label">Hard</div>
-            </div>
-          </div>
-          <p>Keep up the great work!</p>
-        </div>
-        <div class="modal-actions">
-          <button @click="restartSession" class="btn btn-primary">Study Again</button>
-          <button @click="goBack" class="btn btn-secondary">Done</button>
-        </div>
-      </div>
-    </div>
+    <SessionStatsModal
+      v-if="showCompleteModal"
+      :correct-answers="sessionStats.easy"
+      :incorrect-answers="sessionStats.hard"
+      :total-questions="sessionStats.total"
+      @close="closeCompleteModal"
+      @restart="restartSession"
+    />
   </div>
 </template>
 
@@ -138,6 +127,7 @@
 import { ref, computed, onMounted, onUnmounted, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAppStore } from '../composables/useAppStore'
+import SessionStatsModal from '../components/SessionStatsModal.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -217,6 +207,13 @@ const nextCard = () => {
     isFlipped.value = false
   } else {
     showCompleteModal.value = true
+  }
+}
+
+const previousCard = () => {
+  if (currentIndex.value > 0) {
+    currentIndex.value--
+    isFlipped.value = false
   }
 }
 
@@ -586,8 +583,39 @@ onUnmounted(() => {
 
 .action-buttons {
   display: flex;
+  flex-direction: column;
   gap: 1rem;
   justify-content: center;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.button-row {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.primary-actions .btn {
+  flex: 1;
+  max-width: 150px;
+}
+
+.secondary-actions .btn {
+  flex: 1;
+  max-width: 150px;
+}
+
+.tertiary-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  justify-content: center;
+}
+
+.tertiary-actions .btn {
+  flex: 1;
+  max-width: 150px;
 }
 
 .btn {
@@ -601,6 +629,8 @@ onUnmounted(() => {
   cursor: pointer;
   transition: all 0.2s;
   min-height: 48px;
+  min-width: 120px;
+  justify-content: center;
 }
 
 .btn-hard {
@@ -611,6 +641,23 @@ onUnmounted(() => {
 .btn-hard:hover {
   background: rgba(239, 68, 68, 1);
   transform: translateY(-2px);
+}
+
+.btn-prev {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-prev:hover:not(:disabled) {
+  background: var(--bg-secondary);
+  transform: translateY(-2px);
+}
+
+.btn-prev:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .btn-flip {
@@ -807,7 +854,24 @@ onUnmounted(() => {
   }
   
   .action-buttons {
+    gap: 0.75rem;
+  }
+  
+  .button-row {
     flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .primary-actions .btn,
+  .secondary-actions .btn,
+  .tertiary-actions .btn {
+    width: 100%;
+    max-width: none;
+  }
+  
+  .tertiary-actions {
+    flex-direction: column;
+    gap: 0.75rem;
   }
   
   .stats {
@@ -816,6 +880,27 @@ onUnmounted(() => {
   
   .modal-actions {
     flex-direction: column;
+  }
+}
+
+@media (min-width: 769px) {
+  .button-row {
+    gap: 1.5rem;
+  }
+  
+  .primary-actions .btn,
+  .secondary-actions .btn {
+    min-width: 140px;
+    padding: 0.875rem 1.5rem;
+  }
+  
+  .tertiary-actions {
+    gap: 1.5rem;
+  }
+  
+  .tertiary-actions .btn {
+    min-width: 140px;
+    padding: 0.75rem 1.5rem;
   }
 }
 </style>
