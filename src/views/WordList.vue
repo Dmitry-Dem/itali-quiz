@@ -49,7 +49,7 @@
             <div v-if="editingId !== word.id" class="word-display">
               <div class="word-content">
                 <div class="italian-text">{{ word.italian }}</div>
-                <div class="english-text">{{ word.english }}</div>
+                <div class="english-text" v-show="showTranslations">{{ word.english }}</div>
                 <div class="word-meta">
                   <span class="category-badge">{{ getGroupName(word.groupId) || 'general' }}</span>
                   <span class="difficulty-badge" :class="word.difficulty || 'beginner'">
@@ -209,6 +209,16 @@
         </div>
       </div>
     </div>
+    
+    <button 
+      @click="showTranslations = !showTranslations"
+      class="floating-toggle-btn"
+      :class="{ 'translations-hidden': !showTranslations }"
+      :title="showTranslations ? 'Hide translations' : 'Show translations'"
+    >
+      <span v-if="showTranslations">👁️</span>
+      <span v-else>🙈</span>
+    </button>
   </div>
 </template>
 
@@ -221,6 +231,7 @@ const { words, wordGroups, addWord, removeWord, updateWord, searchWords, toggleW
 
 const searchQuery = ref('')
 const learnedFilter = ref('all')
+const showTranslations = ref(true)
 
 const showAddModal = ref(false)
 const addItalianInput = ref<HTMLInputElement>()
@@ -704,6 +715,51 @@ nextTick(() => {
   
   .form-row {
     grid-template-columns: 1fr;
+  }
+}
+
+.floating-toggle-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-accent);
+  color: var(--text-accent);
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  transition: all 0.3s ease;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.floating-toggle-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: var(--shadow-xl);
+}
+
+.floating-toggle-btn:active {
+  transform: translateY(0) scale(0.95);
+}
+
+.floating-toggle-btn.translations-hidden {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+}
+
+@media (max-width: 768px) {
+  .floating-toggle-btn {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 48px;
+    height: 48px;
+    font-size: 1.3rem;
   }
 }
 </style>
