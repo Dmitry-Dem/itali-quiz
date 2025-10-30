@@ -251,7 +251,15 @@ const markAsLearned = () => {
   const currentWord = words.value[currentIndex.value]
   if (currentWord) {
     toggleWordLearned(currentWord.id)
-    nextCard()
+    words.value.splice(currentIndex.value, 1)
+    
+    if (currentIndex.value >= words.value.length && words.value.length > 0) {
+      currentIndex.value = words.value.length - 1
+    }
+    
+    if (words.value.length === 0) {
+      showCompleteModal.value = true
+    }
   }
 }
 
@@ -259,9 +267,8 @@ const deleteWord = () => {
   const currentWord = words.value[currentIndex.value]
   if (currentWord) {
     removeWord(currentWord.id)
-    refreshWords()
+    words.value.splice(currentIndex.value, 1)
     
-    // If we deleted the last word, go to previous
     if (currentIndex.value >= words.value.length && words.value.length > 0) {
       currentIndex.value = words.value.length - 1
     }
@@ -339,6 +346,7 @@ const restartSession = () => {
 
 const closeCompleteModal = () => {
   showCompleteModal.value = false
+  goBack()
 }
 
 const goBack = () => {
