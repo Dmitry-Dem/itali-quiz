@@ -37,6 +37,7 @@
           @mouseup="handleMouseUp"
         >
           <div class="card-inner">
+            <div class="card-index">{{ currentIndex + index + 1 }}</div>
             <div class="card-front">
               <div class="language-label">Italian</div>
               <div class="word-text">{{ word.italian }}</div>
@@ -495,6 +496,36 @@ onUnmounted(() => {
   height: 100%;
   transform-style: preserve-3d;
   transition: transform 0.6s;
+}
+
+.card-index {
+  position: absolute !important;
+  top: 12px !important;
+  right: 12px !important;
+  left: auto !important;
+  bottom: auto !important;
+  width: 28px;
+  height: 28px;
+  background: var(--bg-accent);
+  color: var(--text-accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  z-index: 10;
+  box-shadow: var(--shadow-sm);
+}
+
+@media (min-width: 768px) {
+  .card-index {
+    top: auto !important;
+    bottom: 12px !important;
+    right: 12px !important;
+    left: auto !important;
+    display: none;
+  }
 }
 
 .flashcard.flipped .card-inner {

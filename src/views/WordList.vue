@@ -41,15 +41,16 @@
         
         <div v-else class="words-grid">
           <div 
-            v-for="word in filteredWords" 
+            v-for="(word, index) in filteredWords" 
             :key="word.id"
             class="word-item"
             :class="{ 'editing': editingId === word.id }"
           >
             <div v-if="editingId !== word.id" class="word-display">
+              <div class="word-index">{{ index + 1 }}</div>
               <div class="word-content">
                 <div class="italian-text">{{ word.italian }}</div>
-                <div class="english-text" v-show="showTranslations">{{ word.english }}</div>
+                <div class="english-text" :style="{ visibility: showTranslations ? 'visible' : 'hidden' }">{{ word.english }}</div>
                 <div class="word-meta">
                   <span class="category-badge">{{ getGroupName(word.groupId) || 'general' }}</span>
                   <span class="difficulty-badge" :class="word.difficulty || 'beginner'">
@@ -395,6 +396,35 @@ nextTick(() => {
   justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
+  position: relative;
+}
+
+.word-index {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  left: auto;
+  width: 24px;
+  height: 24px;
+  background: var(--bg-accent);
+  color: var(--text-accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  z-index: 1;
+}
+
+/* Desktop positioning - bottom right */
+@media (min-width: 768px) {
+  .word-index {
+    top: auto;
+    bottom: -8px;
+    right: -8px;
+    left: auto;
+  }
 }
 
 .word-content {
