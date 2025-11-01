@@ -5,6 +5,7 @@ import Groups from '../views/Groups.vue'
 import GroupWords from '../views/GroupWords.vue'
 import FlashCards from '../views/FlashCards.vue'
 import Quiz from '../views/Quiz.vue'
+import Duplicates from '../views/Duplicates.vue'
 
 const routes = [
   {
@@ -36,6 +37,11 @@ const routes = [
     path: '/quiz',
     name: 'Quiz',
     component: Quiz
+  },
+  {
+    path: '/duplicates',
+    name: 'Duplicates',
+    component: Duplicates
   },
   {
     path: '/:pathMatch(.*)*',
