@@ -8,6 +8,9 @@ import Quiz from '../views/Quiz.vue'
 import Duplicates from '../views/Duplicates.vue'
 import Notes from '../views/Notes.vue'
 import NoteView from '../views/NoteView.vue'
+import TextImport from '../views/TextImport.vue'
+import ImportQueue from '../views/ImportQueue.vue'
+import StoryView from '../views/StoryView.vue'
 
 const routes = [
   {
@@ -54,6 +57,21 @@ const routes = [
     path: '/notes/:id',
     name: 'NoteView',
     component: NoteView
+  },
+  {
+    path: '/text-import',
+    name: 'TextImport',
+    component: TextImport
+  },
+  {
+    path: '/import-queue',
+    name: 'ImportQueue',
+    component: ImportQueue
+  },
+  {
+    path: '/story/:id',
+    name: 'StoryView',
+    component: StoryView
   },
   {
     path: '/:pathMatch(.*)*',
