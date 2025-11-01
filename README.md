@@ -33,9 +33,17 @@ Enjoy the chaos. Cry a little if you must.
 * Add, edit, and organize Italian words by categories
 * Basic word details with Italian word and English translation
 * **Bulk import**: Import multiple words at once from text
+* **Find duplicates**: Clean up duplicate words with smart matching
 * **Backup & restore**: Export/import your data for backup
 * Simple search across words and translations
 * Organize words into groups/categories
+* **Translation toggle**: Hide/show translations in word lists
+
+### 📝 Notes
+
+* Create and organize personal notes for Italian learning
+* Color-coded categories
+* Basic text formatting
 
 ### 🎯 Simple Learning
 
@@ -46,7 +54,11 @@ Enjoy the chaos. Cry a little if you must.
 ### 🃏 Study Modes
 
 * **Flashcards**: Basic flip-card sessions to test yourself
-* **Quiz**: Simple multiple choice questions
+* **Quiz**: Multiple choice or typing practice with bidirectional translation
+  * Choose Italian→English or English→Italian direction
+  * Write answers or select from multiple choice
+  * Custom word ranges for focused practice
+  * Session stats with letter grades (A+ to F) and score summary
 * **Group Study**: Focus on specific word categories
 * **Basic Filtering**: Show/hide learned words
 

@@ -12,6 +12,7 @@
             <router-link to="/groups" class="nav-link">Categories</router-link>
             <router-link to="/words" class="nav-link">All Words</router-link>
             <router-link to="/duplicates" class="nav-link">Duplicates</router-link>
+            <router-link to="/notes" class="nav-link">Notes</router-link>
           </div>
           
           <div class="mobile-nav-controls">
@@ -41,6 +42,10 @@
           <router-link to="/duplicates" class="nav-link mobile-nav-link" @click="showMobileMenu = false">
             <span class="nav-icon">🔍</span>
             Duplicates
+          </router-link>
+          <router-link to="/notes" class="nav-link mobile-nav-link" @click="showMobileMenu = false">
+            <span class="nav-icon">📓</span>
+            Notes
           </router-link>
         </div>
       </div>

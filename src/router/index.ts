@@ -6,6 +6,8 @@ import GroupWords from '../views/GroupWords.vue'
 import FlashCards from '../views/FlashCards.vue'
 import Quiz from '../views/Quiz.vue'
 import Duplicates from '../views/Duplicates.vue'
+import Notes from '../views/Notes.vue'
+import NoteView from '../views/NoteView.vue'
 
 const routes = [
   {
@@ -42,6 +44,16 @@ const routes = [
     path: '/duplicates',
     name: 'Duplicates',
     component: Duplicates
+  },
+  {
+    path: '/notes',
+    name: 'Notes',
+    component: Notes
+  },
+  {
+    path: '/notes/:id',
+    name: 'NoteView',
+    component: NoteView
   },
   {
     path: '/:pathMatch(.*)*',

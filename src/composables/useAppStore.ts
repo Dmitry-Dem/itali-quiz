@@ -3,9 +3,20 @@ import { dataService, type Word, type AppSettings, type WordGroup } from '../ser
 
 export { type Word, type AppSettings, type WordGroup } from '../services/dataService'
 
+export interface Note {
+  id: string
+  title: string
+  content: string
+  color: string
+  category: string
+  createdAt: string
+  updatedAt: string
+}
+
 // Create singleton store instance
 const words = ref<Word[]>([])
 const wordGroups = ref<WordGroup[]>([])
+const notes = ref<Note[]>([])
 const settings = ref<AppSettings>({
   theme: 'dark',
   language: 'en',
@@ -32,9 +43,14 @@ export const useAppStore = () => {
         dataService.loadWordGroupsWithFallback()
       ])
       
+      // Load notes from localStorage
+      const savedNotes = localStorage.getItem('itali-quiz-notes')
+      const loadedNotes = savedNotes ? JSON.parse(savedNotes) : []
+      
       words.value = loadedWords
       settings.value = loadedSettings
       wordGroups.value = loadedGroups
+      notes.value = loadedNotes
     } catch (err) {
       error.value = 'Failed to load data'
       console.error('Error loading data:', err)
@@ -239,6 +255,45 @@ export const useAppStore = () => {
       reader.readAsText(file)
     })
   }
+
+  // Notes management functions
+  const saveNotes = () => {
+    localStorage.setItem('itali-quiz-notes', JSON.stringify(notes.value))
+  }
+
+  const addNote = (title: string, content: string, color: Note['color'], category: string) => {
+    const newNote: Note = {
+      id: Date.now().toString(),
+      title: title.trim(),
+      content: content.trim(),
+      color,
+      category: category.trim(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }
+    notes.value.push(newNote)
+    saveNotes()
+  }
+
+  const updateNote = (id: string, title: string, content: string, color: Note['color'], category: string) => {
+    const note = notes.value.find(n => n.id === id)
+    if (note) {
+      note.title = title.trim()
+      note.content = content.trim()
+      note.color = color
+      note.category = category.trim()
+      note.updatedAt = new Date().toISOString()
+      saveNotes()
+    }
+  }
+
+  const removeNote = (id: string) => {
+    const index = notes.value.findIndex(note => note.id === id)
+    if (index > -1) {
+      notes.value.splice(index, 1)
+      saveNotes()
+    }
+  }
   
   onMounted(() => {
     loadData()
@@ -247,6 +302,7 @@ export const useAppStore = () => {
   return {
     words: computed(() => words.value),
     wordGroups: computed(() => wordGroups.value),
+    notes: computed(() => notes.value),
     settings: computed(() => settings.value),
     theme,
     isLoading: computed(() => isLoading.value),
@@ -268,6 +324,9 @@ export const useAppStore = () => {
     updateWordGroup,
     deleteWordGroup,
     exportData,
-    importData
+    importData,
+    addNote,
+    updateNote,
+    removeNote
   }
 }
