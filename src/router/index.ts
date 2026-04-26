@@ -11,6 +11,7 @@ import NoteView from '../views/NoteView.vue'
 import TextImport from '../views/TextImport.vue'
 import ImportQueue from '../views/ImportQueue.vue'
 import StoryView from '../views/StoryView.vue'
+import Arithmetic from '../views/Arithmetic.vue'
 
 const routes = [
   {
@@ -72,6 +73,11 @@ const routes = [
     path: '/story/:id',
     name: 'StoryView',
     component: StoryView
+  },
+  {
+    path: '/arithmetic',
+    name: 'Arithmetic',
+    component: Arithmetic
   },
   {
     path: '/:pathMatch(.*)*',

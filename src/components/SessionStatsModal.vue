@@ -44,6 +44,11 @@
               <div class="stat-number">{{ totalQuestions }}</div>
               <div class="stat-label">Total</div>
             </div>
+            <div v-if="timeTaken" class="stat-card">
+              <div class="stat-icon">⏱</div>
+              <div class="stat-number">{{ formatTime(timeTaken) }}</div>
+              <div class="stat-label">Time</div>
+            </div>
           </div>
         </div>
         
@@ -67,6 +72,7 @@ interface Props {
   correctAnswers: number
   incorrectAnswers: number
   totalQuestions: number
+  timeTaken?: number
 }
 
 const props = defineProps<Props>()
@@ -125,6 +131,12 @@ const encouragementMessage = computed(() => {
   if (pct >= 50) return "You're improving! Keep studying and you'll get there! 🌟"
   return "Don't give up! Every expert was once a beginner! 🚀"
 })
+
+function formatTime(seconds: number): string {
+  const m = Math.floor(seconds / 60)
+  const s = seconds % 60
+  return m > 0 ? m + 'm ' + s + 's' : s + 's'
+}
 </script>
 
 <style scoped>

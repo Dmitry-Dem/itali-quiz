@@ -15,6 +15,7 @@
             <router-link to="/notes" class="nav-link">Notes</router-link>
             <router-link to="/text-import" class="nav-link">Text Import</router-link>
             <router-link to="/import-queue" class="nav-link">Import Queue</router-link>
+            <router-link to="/arithmetic" class="nav-link">Arithmetic</router-link>
           </div>
           
           <div class="mobile-nav-controls">
@@ -56,6 +57,10 @@
           <router-link to="/import-queue" class="nav-link mobile-nav-link" @click="showMobileMenu = false">
             <span class="nav-icon">📋</span>
             Import Queue
+          </router-link>
+          <router-link to="/arithmetic" class="nav-link mobile-nav-link" @click="showMobileMenu = false">
+            <span class="nav-icon">🧮</span>
+            Arithmetic
           </router-link>
         </div>
       </div>
