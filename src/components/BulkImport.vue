@@ -8,7 +8,7 @@
 
       <div class="modal-body">
         <div class="import-instructions">
-          <p><strong>Format:</strong> [italian][english][description], [italian][english][description]</p>
+          <p><strong>Format:</strong> [word][translation][description], [word][translation][description]</p>
           <p><strong>Example:</strong> [ciao][hello][greeting], [grazie][thank you][]</p>
           <p class="note">Note: Description is optional. Separate multiple words with commas.</p>
         </div>

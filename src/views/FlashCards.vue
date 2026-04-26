@@ -39,7 +39,7 @@
           <div class="card-inner">
             <div class="card-index">{{ currentIndex + index + 1 }}</div>
             <div class="card-front">
-              <div class="language-label">Italian</div>
+              <div class="language-label">Word</div>
               <div class="word-text">{{ word.italian }}</div>
               <div class="tap-hint" v-if="index === 0">Tap to reveal</div>
             </div>

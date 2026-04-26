@@ -18,7 +18,7 @@
       <SearchFilter 
         v-model="searchQuery"
         v-model:learnedFilter="learnedFilter"
-        placeholder="Search Italian or English words..."
+        placeholder="Search words or translations..."
         :showLearnedFilter="true"
         :animate="true"
       />
@@ -33,7 +33,7 @@
         <div v-else-if="words.length === 0" class="empty-state">
           <div class="empty-icon">📚</div>
           <h3>No words yet</h3>
-          <p>Start building your Italian vocabulary!</p>
+          <p>Start building your vocabulary!</p>
           <button @click="showAddModal = true" class="btn btn-primary mt-4">
             Add Your First Word
           </button>
@@ -93,7 +93,7 @@
                   v-model="editForm.italian"
                   type="text" 
                   class="edit-input italian-input"
-                  placeholder="Italian word"
+                  placeholder="Word"
                   ref="editItalianInput"
                 >
                 <input 
@@ -129,7 +129,7 @@
         
         <form @submit.prevent="handleAddWord" class="modal-form">
           <div class="form-group">
-            <label class="form-label">Italian Word</label>
+            <label class="form-label">Word</label>
             <input 
               v-model="newWord.italian"
               type="text" 

@@ -91,16 +91,16 @@
               :class="{ 'selected': direction === 'it-en' }"
               @click="direction = 'it-en'"
             >
-              <div class="direction-flag">🇮🇹 → 🇬🇧</div>
-              <div class="direction-desc">Italian to English</div>
+              <div class="direction-flag">📖 → 💬</div>
+              <div class="direction-desc">Word to Translation</div>
             </div>
             <div 
               class="direction-option"
               :class="{ 'selected': direction === 'en-it' }"
               @click="direction = 'en-it'"
             >
-              <div class="direction-flag">🇬🇧 → 🇮🇹</div>
-              <div class="direction-desc">English to Italian</div>
+              <div class="direction-flag">💬 → 📖</div>
+              <div class="direction-desc">Translation to Word</div>
             </div>
             <div 
               class="direction-option"

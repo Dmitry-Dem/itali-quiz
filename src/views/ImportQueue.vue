@@ -99,7 +99,7 @@
 
           <form @submit.prevent="saveEdit" class="modal-form">
             <div class="form-group">
-              <label for="editWord">Italian Word</label>
+              <label for="editWord">Word</label>
               <input 
                 id="editWord"
                 v-model="editingWord" 

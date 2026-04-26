@@ -1,7 +1,7 @@
 {
-  "name": "Italian Vocabulary App",
-  "short_name": "Italian Vocab",
-  "description": "Learn Italian vocabulary with this beautiful mobile app",
+  "name": "MyKit",
+  "short_name": "MyKit",
+  "description": "Your personal toolkit — vocabulary, memory, math and more",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",
@@ -24,7 +24,7 @@
     {
       "name": "Add Word",
       "short_name": "Add Word",
-      "description": "Quickly add a new Italian word",
+      "description": "Quickly add a new word",
       "url": "/?action=add",
       "icons": [{ "src": "/vite.svg", "sizes": "32x32" }]
     },

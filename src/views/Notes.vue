@@ -44,7 +44,7 @@
         <div v-if="filteredNotes.length === 0 && notes.length === 0" class="empty-state">
           <div class="empty-icon">📝</div>
           <h3>No notes yet</h3>
-          <p>Create your first note to store Italian learning tips, grammar rules, or personal observations.</p>
+          <p>Create your first note to store learning tips, grammar rules, or personal observations.</p>
           <button @click="showAddModal = true" class="btn btn-primary mt-4">
             Create Note
           </button>

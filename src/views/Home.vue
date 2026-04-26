@@ -4,11 +4,11 @@
       <div class="hero-section animate-slide-down">
         <div class="hero-content">
           <h1 class="hero-title">
-            Learn Italian
-            <span class="gradient-text">Vocabulary</span>
+            My
+            <span class="gradient-text">Kit</span>
           </h1>
           <p class="hero-subtitle">
-            Build your Italian vocabulary with our beautiful, modern learning app
+            Your personal toolkit — all the tools you need, in one place
           </p>
         </div>
         
@@ -33,7 +33,7 @@
           <div class="action-card" @click="showAddModal = true">
             <div class="action-icon">➕</div>
             <h3 class="action-title">Add New Word</h3>
-            <p class="action-description">Expand your vocabulary with new Italian words</p>
+            <p class="action-description">Expand your vocabulary with new words</p>
           </div>
           
           <div class="action-card" @click="showBulkImportModal = true">

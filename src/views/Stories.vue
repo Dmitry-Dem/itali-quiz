@@ -19,7 +19,7 @@
         <div v-if="stories.length === 0" class="empty-state">
           <div class="empty-icon">📚</div>
           <h3>No stories yet</h3>
-          <p>Import your first Italian text to start building your story collection and track your vocabulary progress.</p>
+          <p>Import your first text to start building your story collection and track your vocabulary progress.</p>
           <router-link to="/text-import" class="btn btn-primary mt-4">
             Import Text
           </router-link>

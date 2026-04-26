@@ -4,7 +4,7 @@
       <div class="container">
         <div class="nav-content">
           <router-link to="/" class="logo">
-            <h2 class="text-xl font-bold">🇮🇹 Vocab</h2>
+            <h2 class="text-xl font-bold">⚡ MyKit</h2>
           </router-link>
           
           <div class="nav-links desktop-nav">

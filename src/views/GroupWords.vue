@@ -84,7 +84,7 @@
         <div class="word-content">
           <div class="word-pair">
             <div class="italian-word">{{ word.italian }}</div>
-            <div class="english-word">{{ word.english }}</div>
+            <div class="english-word" :style="{ visibility: showTranslations ? 'visible' : 'hidden' }">{{ word.english }}</div>
           </div>
           
           <div class="word-meta">
@@ -140,7 +140,7 @@
 
         <form @submit.prevent="saveWord" class="modal-form">
           <div class="form-group">
-            <label for="italianWord">Italian Word</label>
+            <label for="italianWord">Word</label>
             <input 
               id="italianWord"
               v-model="wordForm.italian" 
@@ -295,6 +295,16 @@
       @close="showBulkImportModal = false"
       @import="handleBulkImport"
     />
+
+    <button
+      @click="showTranslations = !showTranslations"
+      class="floating-toggle-btn"
+      :class="{ 'translations-hidden': !showTranslations }"
+      :title="showTranslations ? 'Hide translations' : 'Show translations'"
+    >
+      <span v-if="showTranslations">👁️</span>
+      <span v-else>🙈</span>
+    </button>
   </div>
 </template>
 
@@ -314,6 +324,7 @@ const groupId = computed(() => route.params.groupId as string)
 const showAddWordModal = ref(false)
 const showEditGroupModal = ref(false)
 const showBulkImportModal = ref(false)
+const showTranslations = ref(true)
 const editingWord = ref<Word | null>(null)
 const searchQuery = ref('')
 const learnedFilter = ref<'all' | 'learned' | 'unlearned'>('all')
@@ -1026,6 +1037,51 @@ const handleBulkImport = (data: { words: Array<{ italian: string; english: strin
   
   .actions-bar {
     gap: 0.75rem;
+  }
+}
+
+.floating-toggle-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-accent);
+  color: var(--text-accent);
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  transition: all 0.3s ease;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.floating-toggle-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: var(--shadow-xl);
+}
+
+.floating-toggle-btn:active {
+  transform: translateY(0) scale(0.95);
+}
+
+.floating-toggle-btn.translations-hidden {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+}
+
+@media (max-width: 768px) {
+  .floating-toggle-btn {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 48px;
+    height: 48px;
+    font-size: 1.3rem;
   }
 }
 </style>

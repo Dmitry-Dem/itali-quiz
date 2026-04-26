@@ -17,11 +17,11 @@
 
       <div v-if="!processedText" class="import-section">
         <div class="input-area">
-          <label for="text-input">Paste your Italian text here:</label>
+          <label for="text-input">Paste your text here:</label>
           <textarea
             id="text-input"
             v-model="inputText"
-            placeholder="Paste any Italian text here - from books, articles, or any content you want to read and understand..."
+            placeholder="Paste any text here - from books, articles, or any content you want to read and understand..."
             rows="10"
             class="text-input"
           ></textarea>
