@@ -6,6 +6,7 @@
       :incorrect-answers="wrong"
       :total-questions="total"
       :time-taken="totalTime"
+      mode="math"
       @close="$emit('back-to-setup')"
       @restart="restart"
     />
@@ -37,28 +38,28 @@
         <template v-else>&nbsp;</template>
       </div>
 
-      <div class="action-row">
-        <button @click="prevQuestion" class="btn btn-secondary btn-nav" :disabled="currentIndex === 0 || feedback === ''">←</button>
-        <input
-          ref="answerInput"
-          v-model="userAnswer"
-          type="number"
-          step="any"
-          class="answer-input"
-          placeholder="?"
-          :disabled="feedback !== ''"
-          @keyup.enter="submitAnswer"
-        />
-        <button v-if="feedback === ''" @click="submitAnswer" class="btn btn-primary btn-action">Submit</button>
-        <button v-else @click="nextQuestion" class="btn btn-primary btn-action">Next →</button>
-        <button @click="skipQuestion" class="btn btn-secondary btn-nav" :disabled="feedback !== ''">⏭</button>
+      <div class="answer-display" :class="{ disabled: feedback !== '' }">{{ userAnswer || '?' }}</div>
+
+      <div class="numpad">
+        <button v-for="n in [1,2,3,4,5,6,7,8,9]" :key="n" class="numpad-btn" :disabled="feedback !== ''" @click="pressKey(String(n))">{{ n }}</button>
+        <button class="numpad-btn" :disabled="feedback !== ''" @click="pressKey('.')">.</button>
+        <button class="numpad-btn" :disabled="feedback !== ''" @click="pressKey('0')">0</button>
+        <button class="numpad-btn numpad-del" :disabled="feedback !== ''" @click="deleteLast">⌫</button>
+        <button class="numpad-btn numpad-neg" :disabled="feedback !== ''" @click="toggleNeg">±</button>
+        <button v-if="feedback === ''" class="numpad-btn numpad-submit" @click="submitAnswer">Submit</button>
+        <button v-else class="numpad-btn numpad-submit" @click="nextQuestion">Next →</button>
+        <button class="numpad-btn numpad-skip" :disabled="feedback !== ''" @click="skipQuestion">⏭</button>
+      </div>
+
+      <div class="nav-row">
+        <button @click="prevQuestion" class="btn btn-secondary" :disabled="currentIndex === 0 || feedback === ''">← Prev</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, onUnmounted } from 'vue'
+import { ref, onUnmounted } from 'vue'
 import { type GameSetup, type Equation, generateEquation } from '../../composables/useArithmeticEngine'
 import SessionStatsModal from '../SessionStatsModal.vue'
 
@@ -66,7 +67,6 @@ const props = defineProps<{ setup: GameSetup }>()
 defineEmits<{ 'back-to-setup': [], quit: [] }>()
 
 const total = props.setup.questionsPerSession
-const answerInput = ref<HTMLInputElement | null>(null)
 const userAnswer = ref('')
 const feedback = ref<'' | 'correct' | 'wrong' | 'timeout'>('')
 const correct = ref(0)
@@ -120,9 +120,24 @@ function onTimeout() {
   timeLeft.value = 0
 }
 
-async function focusInput() {
-  await nextTick()
-  answerInput.value?.focus()
+function pressKey(key: string) {
+  if (feedback.value !== '') return
+  if (key === '.' && userAnswer.value.includes('.')) return
+  userAnswer.value += key
+}
+
+function deleteLast() {
+  if (feedback.value !== '') return
+  userAnswer.value = userAnswer.value.slice(0, -1)
+}
+
+function toggleNeg() {
+  if (feedback.value !== '') return
+  if (userAnswer.value.startsWith('-')) {
+    userAnswer.value = userAnswer.value.slice(1)
+  } else {
+    userAnswer.value = '-' + userAnswer.value
+  }
 }
 
 function submitAnswer() {
@@ -163,7 +178,6 @@ function nextQuestion() {
   feedback.value = ''
   userAnswer.value = ''
   currentEquation.value = generateEquation(props.setup)
-  focusInput()
   startCountdown()
 }
 
@@ -181,7 +195,6 @@ function prevQuestion() {
   currentEquation.value = prev.equation
   feedback.value = ''
   userAnswer.value = ''
-  focusInput()
   startCountdown()
 }
 
@@ -194,11 +207,9 @@ function restart() {
   userAnswer.value = ''
   history.value = []
   currentEquation.value = generateEquation(props.setup)
-  focusInput()
   startCountdown()
 }
 
-focusInput()
 startCountdown()
 </script>
 
@@ -321,60 +332,88 @@ startCountdown()
 .feedback-line.correct { color: #10b981; }
 .feedback-line.wrong, .feedback-line.timeout { color: #ef4444; }
 
-.action-row {
-  display: flex;
-  gap: 0.5rem;
-  align-items: stretch;
-}
-
-.answer-input {
-  flex: 1;
-  padding: 0.9rem 1rem;
+.answer-display {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
   background: var(--bg-secondary);
   border: 2px solid var(--border-color);
   border-radius: 0.5rem;
-  color: var(--text-primary);
-  font-size: 1.5rem;
-  font-weight: 600;
-  text-align: center;
-  min-width: 0;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  min-height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.answer-input:focus {
-  outline: none;
-  border-color: var(--primary-color);
-}
-
-.answer-input:disabled {
+.answer-display.disabled {
   opacity: 0.5;
 }
 
-.btn-action {
-  padding: 0.9rem 1.5rem;
-  font-size: 1rem;
+.numpad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.numpad-btn {
+  padding: 1rem;
+  font-size: 1.25rem;
   font-weight: 600;
-  white-space: nowrap;
-  min-width: 90px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.btn-nav {
-  padding: 0.9rem 0.75rem;
-  font-size: 1rem;
-  min-width: 44px;
+.numpad-btn:active:not(:disabled) {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
 }
 
-.btn-nav:disabled {
+.numpad-btn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
+}
+
+.numpad-submit {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.numpad-submit:active:not(:disabled) {
+  opacity: 0.8;
+}
+
+.numpad-del, .numpad-neg, .numpad-skip {
+  font-size: 1rem;
+}
+
+.nav-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.75rem;
 }
 
 @media (max-width: 768px) {
   .equation-text {
     font-size: 2rem;
   }
-  .btn-action {
-    padding: 0.9rem 1rem;
-    min-width: 70px;
+  .question-area {
+    padding: 2rem 1rem;
+  }
+  .numpad {
+    max-width: 100%;
   }
 }
 </style>

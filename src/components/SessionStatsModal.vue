@@ -22,8 +22,8 @@
             <span class="score-value">{{ percentage }}%</span>
           </div>
           <div class="score-item">
-            <span class="score-label">Words Known:</span>
-            <span class="score-value">{{ correctAnswers }}/{{ totalQuestions }} words</span>
+            <span class="score-label">{{ props.mode === 'math' ? 'Correct' : 'Words Known' }}:</span>
+            <span class="score-value">{{ correctAnswers }}/{{ totalQuestions }}</span>
           </div>
         </div>
         
@@ -73,6 +73,7 @@ interface Props {
   incorrectAnswers: number
   totalQuestions: number
   timeTaken?: number
+  mode?: 'words' | 'math'
 }
 
 const props = defineProps<Props>()
@@ -124,6 +125,14 @@ const gradeDescription = computed(() => {
 
 const encouragementMessage = computed(() => {
   const pct = percentage.value
+  if (props.mode === 'math') {
+    if (pct >= 95) return 'Outstanding! You nailed it! 🎉'
+    if (pct >= 85) return 'Excellent work! Keep sharpening those skills! 👏'
+    if (pct >= 75) return 'Good job! Consistent practice pays off! 💪'
+    if (pct >= 65) return 'Nice progress! A bit more and you\'ll master it! 📐'
+    if (pct >= 50) return 'You\'re getting there! Keep at it! 🌟'
+    return 'Practice makes perfect! Try again! 🚀'
+  }
   if (pct >= 95) return "Outstanding! You've mastered these words! 🎉"
   if (pct >= 85) return "Excellent work! You're really getting the hang of this! 👏"
   if (pct >= 75) return "Good job! Keep up the consistent practice! 💪"
