@@ -5,7 +5,7 @@
       :correct-answers="correct"
       :incorrect-answers="wrong"
       :total-questions="total"
-      :time-taken="totalTime"
+      :time-taken="Math.round(totalTime)"
       mode="math"
       @close="$emit('back-to-setup')"
       @restart="restart"
@@ -77,13 +77,12 @@ const totalTime = ref(0)
 const timeLeft = ref(props.setup.timeLimit ?? 0)
 const timerProgress = ref(1)
 
-const history = ref<{ equation: Equation, userAnswer: string, result: 'correct' | 'wrong' | 'timeout' | 'skipped' }[]>([])
+const history = ref<{ equation: Equation, userAnswer: string, result: 'correct' | 'wrong' | 'timeout' | 'skipped', timeSpent: number }[]>([])
 const currentEquation = ref<Equation | null>(generateEquation(props.setup))
 
 let autoAdvanceTimer: ReturnType<typeof setTimeout> | null = null
 let countdownTimer: ReturnType<typeof setInterval> | null = null
-let timerStart = 0
-const sessionStart = Date.now()
+let questionStartTime = Date.now()
 
 onUnmounted(() => {
   if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer)
@@ -91,13 +90,13 @@ onUnmounted(() => {
 })
 
 function startCountdown() {
+  questionStartTime = Date.now()
   if (!props.setup.timeLimit) return
   timeLeft.value = props.setup.timeLimit
   timerProgress.value = 1
-  timerStart = Date.now()
   stopCountdown()
   countdownTimer = setInterval(() => {
-    const elapsed = (Date.now() - timerStart) / 1000
+    const elapsed = (Date.now() - questionStartTime) / 1000
     const remaining = Math.max(0, props.setup.timeLimit! - elapsed)
     timeLeft.value = Math.ceil(remaining)
     timerProgress.value = remaining / props.setup.timeLimit!
@@ -118,6 +117,9 @@ function onTimeout() {
   feedback.value = 'timeout'
   timerProgress.value = 0
   timeLeft.value = 0
+  if (currentEquation.value) {
+    history.value.push({ equation: currentEquation.value, userAnswer: '', result: 'timeout', timeSpent: 0 })
+  }
 }
 
 function pressKey(key: string) {
@@ -143,27 +145,32 @@ function toggleNeg() {
 function submitAnswer() {
   if (userAnswer.value === '' || currentEquation.value === null) return
   stopCountdown()
+  const elapsed = (Date.now() - questionStartTime) / 1000
   const userNum = parseFloat(userAnswer.value)
   const expected = currentEquation.value.answer
   const match = Math.abs(userNum - expected) < 0.005
   if (match) {
     correct.value++
     feedback.value = 'correct'
-    history.value.push({ equation: currentEquation.value, userAnswer: userAnswer.value, result: 'correct' })
+    totalTime.value += elapsed
+    history.value.push({ equation: currentEquation.value, userAnswer: userAnswer.value, result: 'correct', timeSpent: elapsed })
     autoAdvanceTimer = setTimeout(() => nextQuestion(), 800)
   } else {
     wrong.value++
     feedback.value = 'wrong'
-    history.value.push({ equation: currentEquation.value, userAnswer: userAnswer.value, result: 'wrong' })
+    totalTime.value += elapsed
+    history.value.push({ equation: currentEquation.value, userAnswer: userAnswer.value, result: 'wrong', timeSpent: elapsed })
   }
 }
 
 function skipQuestion() {
   if (feedback.value !== '' || !currentEquation.value) return
   stopCountdown()
+  const elapsed = (Date.now() - questionStartTime) / 1000
   wrong.value++
   feedback.value = 'wrong'
-  history.value.push({ equation: currentEquation.value, userAnswer: '', result: 'skipped' })
+  totalTime.value += elapsed
+  history.value.push({ equation: currentEquation.value, userAnswer: '', result: 'skipped', timeSpent: elapsed })
 }
 
 function nextQuestion() {
@@ -171,7 +178,6 @@ function nextQuestion() {
   stopCountdown()
   currentIndex.value++
   if (currentIndex.value >= total) {
-    totalTime.value = Math.round((Date.now() - sessionStart) / 1000)
     sessionDone.value = true
     return
   }
@@ -190,6 +196,7 @@ function prevQuestion() {
   const prevResult = prev.result
   if (prevResult === 'correct') correct.value--
   else wrong.value--
+  totalTime.value = Math.max(0, totalTime.value - prev.timeSpent)
   history.value.pop()
   currentIndex.value--
   currentEquation.value = prev.equation
@@ -201,6 +208,7 @@ function prevQuestion() {
 function restart() {
   correct.value = 0
   wrong.value = 0
+  totalTime.value = 0
   currentIndex.value = 0
   sessionDone.value = false
   feedback.value = ''
